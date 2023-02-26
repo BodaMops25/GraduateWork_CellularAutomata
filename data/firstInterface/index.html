@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cellular automaton (Game of life)</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <div class="tools-top">
+    <div class="tools-top-item"></div>
+
+    <div class="tools-button" onclick="document.querySelector('.tools-top').classList.toggle('closed')">
+      <img class="symbol" src="../../resources/images/arrow-right.svg" alt="arrow image">
+    </div>
+  </div>
+  
+  <canvas></canvas>
+
+  <p id="fps-indicator">FPS: <span class="fps-num">000</span></p>
+
+  <script src="core.js"></script>
+  <script src="game.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,73 @@
+body {
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #aaa;
+}
+
+canvas {
+  border: 1px solid;
+  width: 700px;
+  height: 700px;
+}
+
+/* TOOLS WINDOW */
+
+.tools-top {
+  position: absolute;
+  top: 0;
+  width: 80vw;
+  height: 80px;
+  background-color: #ddd;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  box-shadow: 0 5px 10px 0 #0005;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: .1s;
+}
+
+.tools-top .tools-button {
+  font-weight: bold;
+  position: absolute;
+  bottom: 0;
+  transform: translateY(100%);
+  width: 30px;
+  height: 30px;
+  background-color: #bbb;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+  cursor: pointer; 
+}
+
+.tools-top .tools-button .symbol {
+  width: 50%;
+  height: 50%;
+  transform: rotate(-90deg);
+}
+
+.tools-top.closed {
+  transform: translateY(-100%);
+  box-shadow: none;
+}
+.tools-top.closed .tools-button .symbol {transform: rotate(90deg)}
+
+/* OTHER */
+
+#fps-indicator {
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-weight: bold;
+  font-size: 30px;
+}
