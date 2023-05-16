@@ -11,12 +11,11 @@ cnvs.height = cnvs_res
 
 const cells_res = 50,
       cells_size = cnvs_res / cells_res + 1,
-      game_field = [],
-      cellTypes = {}
+      game_field = []
 
 for(let i = 0; i < cells_res; i++) {
   game_field[i] = []
-  for(let j = 0; j < cells_res; j++) game_field[i][j] = {from: 0, to: 0}
+  for(let j = 0; j < cells_res; j++) game_field[i][j] = {from: 'Чорний', to: 'Чорний'}
 }
 
 function gameFieldWhile(callbackCells, callbackRows) {
@@ -24,32 +23,6 @@ function gameFieldWhile(callbackCells, callbackRows) {
     for(let j = 0; j < cells_res; j++) callbackCells(game_field[i][j], i, j, game_field)
     if(callbackRows) callbackRows(game_field[i], i, game_field)
   }
-}
-
-cellTypes[0] = {
-  color: '#000',
-  rules: [
-    {
-      cellNeighbors: {
-        1: [3]
-      },
-      probability: 1,
-      changeCellTypeOn: 1
-    }
-  ]
-}
-
-cellTypes[1] = {
-  color: '#fff',
-  rules: [
-    {
-      cellNeighbors: {
-        1: [0, 1, 4, 5, 6, 7, 8]
-      },
-      probability: 1,
-      changeCellTypeOn: 0
-    }
-  ]
 }
 
 // CALCULATION
@@ -82,7 +55,6 @@ function getCellNeighbors(x, y) {
 }
 
 function calculateCell(x, y) {
-  // if(x === 1 && y === 2) debugger
 
   const cell = getCell(x, y)
   if(cell !== null) {
@@ -129,7 +101,7 @@ function render() {
 
 const density = .5
 for(let i = 0; i < cells_res**2 * density; i++) {
-  setCell(Math.round(randomBetween(0, cells_res - 1)), Math.round(randomBetween(0, cells_res - 1)), 1, 1)
+  setCell(Math.round(randomBetween(0, cells_res - 1)), Math.round(randomBetween(0, cells_res - 1)), 'Білий', 'Білий')
 }
 
 function frame() {

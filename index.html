@@ -8,19 +8,70 @@
 </head>
 <body>
 
-  <div class="tools-top">
-    <div class="tools-top-item"></div>
+  <div class="tools-window tools-window--top-window">
+    <div class="tools-window--top-window__item"></div>
 
-    <div class="tools-button" onclick="document.querySelector('.tools-top').classList.toggle('closed')">
-      <img class="symbol" src="../../resources/images/arrow-right.svg" alt="arrow image">
+    <div class="tools-window-button tools-window__button" onclick="document.querySelector('.tools-window--top-window').classList.toggle('tools-window--top-window--closed')">
+      <svg class="tools-window-button__symbol" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M21 12l-18 12v-24z"/></svg>
     </div>
   </div>
   
   <canvas></canvas>
 
+  <div class="tools-window tools-window--right-window">
+    <div class="tools-window--right-window">
+
+      <div class="cell-types-tool">
+        <div class="cell-types-tool__cell-selector">
+          <label class="cell-types-tool__selector-title" for="cell-types-select">Тип клітинок:</label>
+          <select id="cell-types-select" class="cell-types-tool__select">
+            <option value="#000000">Чорний</option>
+            <option value="#ffffff">Білий</option>
+          </select>
+          <button class="cell-types-tool__delete-type">🗑️</button>
+        </div>
+        <div class="cell-types-tool__cell-adding">
+          <div class="cell-types-tool__cell-adding-container-title">Додати тип клітинок:</div>
+          <form class="cell-types-tool__cell-adding-form">
+            <input class="cell-types-tool__cell-adding-title" type="text" placeholder="Назва типу клітинок">
+            <input class="cell-types-tool__cell-adding-color" type="color">
+            <button class="cell-types-tool__cell-adding-submit-button" type="submit">+</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="cell-rules">
+        <p class="cell-rules__title">Якщо:</p>
+        <div class="cell-rules__description">
+          <label for="ruleNeighborsType" class="cell-rules__label">Сусідів</label>
+          <select id="ruleNeighborsType" class="cell-rules__cells-select">
+            <option value="#000000">Чорний</option>
+            <option value="#ffffff">Білий</option>
+          </select>
+          :
+          <input type="text" class="cell-rules__neighbors-counts">
+          <label for="cellRulesNeighborsCount" class="cell-rules__label">Ймовірність:</label> 
+          <input id="cellRulesProbability" class="cell-rules__probability" type="number" min="0" max="100" step="1">
+        </div>
+        <p class="cell-rules__title">То:</p>
+        <label for="ruleChangingType" class="cell-rules__label">Тип змінюється на:</label>
+        <select id="ruleChangingType" class="cell-rules__cells-select">
+          <option value="#000000">Чорний</option>
+          <option value="#ffffff">Білий</option>
+        </select>
+      </div>
+
+    </div>
+
+    <div class="tools-window-button tools-window__button" onclick="document.querySelector('.tools-window--right-window').classList.toggle('tools-window--right-window--closed')">
+      <svg class="tools-window-button__symbol" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M21 12l-18 12v-24z"/></svg>
+    </div>
+  </div>
+
   <p id="fps-indicator">FPS: <span class="fps-num">000</span></p>
 
   <script src="core.js"></script>
+  <script src="index.js"></script>
   <script src="game.js"></script>
 
 </body>
