@@ -38,6 +38,7 @@ canvas {
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 13px 20px;
 }
 
 .tools-window-button {
@@ -77,6 +78,30 @@ canvas {
   transform: rotate(90deg)
 }
 
+.tools-window__item {
+  width: 100%;
+  height: 100%;
+}
+
+.tools-window--top-window__tool-icon {
+  width: 50px;
+  height: 50px;
+  border: 1px solid #000;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: inset 0 0 10px -2px rgba(0,0,0,0.85);
+  cursor: pointer;
+}
+.tools-window--top-window__tool-icon--active {
+  border-width: 4px;
+}
+
+.tools-window--top-window__tool-icon > * {
+  width: 60%;
+  height: 60%;
+}
 
 .tools-window--right-window {
   right: 0;
@@ -102,6 +127,40 @@ canvas {
   transform: rotate(180deg);
 }
 
+.tools-window--left-window {
+  left: 0;
+  border-bottom-left-radius: 0;
+  border-top-left-radius: 0;
+  width: 20vw;
+  height: 60vh;
+}
+.tools-window--left-window .tools-window-button {
+  position: absolute;
+  right: 0;
+  bottom: 50%;
+  border-bottom-left-radius: 0;
+  border-top-left-radius: 0;
+  transform: translate(100%, 50%);
+}
+.tools-window--left-window--closed {
+  transform: translateX(-100%);
+  box-shadow: none;
+}
+.tools-window--left-window .tools-window-button__symbol {
+  transform: rotate(180deg);
+}
+.tools-window--left-window--closed .tools-window-button__symbol {
+  transform: rotate(0);
+}
+
+.tools-window__buttons-line {
+  margin-bottom: 10px;
+}
+
+.tools-window__text {
+  margin-top: 8px;
+}
+
 /* CELL TYPES INTERFACE */
 
 .cell-types-tool__cell-selector {
@@ -110,17 +169,49 @@ canvas {
 
 /* CELL RULES */
 
-.cell-rules__title {
+.cell-rules {
+  overflow-y: auto;
+  max-height: 68%;
+  margin-bottom: 10px;
+}
+
+.cell-rule-item {
+  padding: 5px;
+  border: 1px solid #000;
+  margin-bottom: 10px;
+  position: relative;
+}
+
+.cell-rule-item__delete-button {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+}
+
+.cell-rule-item__title {
+  margin-top: 5px;
   margin-bottom: 5px;
   font-weight: bold;
 }
 
-.cell-rules__neighbors-counts {
+.cell-rule-item__neighbors-counts {
   width: 40%;
 }
 
-.cell-rules__probability {
+.cell-rule-item__probability {
   width: 50px;
+}
+
+/* ADD BUTTON */
+
+.button-add {
+  width: 100%;
+  text-align: center;
+}
+
+.button-add__button {
+  width: 70px;
+  padding: 5px 10px;
 }
 
 /* OTHER */
