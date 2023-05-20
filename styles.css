@@ -9,7 +9,7 @@ body {
   justify-content: center;
   align-items: center;
   background-color: #aaa;
-  overflow-x: hidden;
+  overflow: hidden;
 }
 
 canvas {
@@ -107,8 +107,8 @@ canvas {
   right: 0;
   border-bottom-right-radius: 0;
   border-top-right-radius: 0;
-  width: 20vw;
-  height: 60vh;
+  width: 350px;
+  height: 70vh;
 }
 
 .tools-window--right-window .tools-window-button {
@@ -131,8 +131,8 @@ canvas {
   left: 0;
   border-bottom-left-radius: 0;
   border-top-left-radius: 0;
-  width: 20vw;
-  height: 60vh;
+  width: 300px;
+  height: 70vh;
 }
 .tools-window--left-window .tools-window-button {
   position: absolute;
@@ -165,6 +165,10 @@ canvas {
 
 .cell-types-tool__cell-selector {
   margin-bottom: 5px;
+}
+
+.cell-types-tool__cell-adding-title {
+  width: 100%;
 }
 
 /* CELL RULES */

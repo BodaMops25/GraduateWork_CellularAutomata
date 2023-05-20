@@ -2,6 +2,12 @@ function randomBetween(min, max) {
   return Math.random() * (max - min) + min
 }
 
+const isVerticalDevice = window.innerHeight > window.innerWidth ? true : false,
+      realSizeWidth = window.innerWidth * window.devicePixelRatio,
+      realSizeHeight = window.innerHeight * window.devicePixelRatio,
+      biggerSide = isVerticalDevice ? realSizeHeight : realSizeWidth,
+      smallerSide = !isVerticalDevice ? realSizeHeight : realSizeWidth
+
 // FPS TOOL
 
 const FPSTOOL = {

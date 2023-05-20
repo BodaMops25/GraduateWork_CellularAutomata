@@ -7,6 +7,11 @@ const cnvs = document.querySelector('canvas'),
 cnvs.width = cnvs_res
 cnvs.height = cnvs_res
 
+const cnvsPageSize = smallerSide * .8
+
+cnvs.style.width = cnvsPageSize + 'px'
+cnvs.style.height = cnvsPageSize + 'px'
+
 // GAME SETUP
 
 const cells_res = 50,
