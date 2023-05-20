@@ -3,10 +3,10 @@ function randomBetween(min, max) {
 }
 
 const isVerticalDevice = window.innerHeight > window.innerWidth ? true : false,
-      realSizeWidth = window.innerWidth * window.devicePixelRatio,
-      realSizeHeight = window.innerHeight * window.devicePixelRatio,
-      biggerSide = isVerticalDevice ? realSizeHeight : realSizeWidth,
-      smallerSide = !isVerticalDevice ? realSizeHeight : realSizeWidth
+      // realSizeWidth = window.innerWidth * window.devicePixelRatio,
+      // realSizeHeight = window.innerHeight * window.devicePixelRatio,
+      // biggerSide = isVerticalDevice ? realSizeHeight : realSizeWidth,
+      smallerSide = !isVerticalDevice ? window.innerHeight : window.innerWidth
 
 // FPS TOOL
 
