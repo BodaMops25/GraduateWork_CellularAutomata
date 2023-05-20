@@ -8,7 +8,7 @@
 </head>
 <body>
 
-  <div class="tools-window tools-window--top-window">
+  <div class="tools-window tools-window--top-window tools-window--top-window--closed">
     <div class="tools-window__item">
 
       <div id="painting-tool" class="tools-window--top-window__tool-icon">
@@ -17,14 +17,14 @@
       
     </div>
     
-    <div class="tools-window-button tools-window__button" onclick="document.querySelector('.tools-window--top-window').classList.toggle('tools-window--top-window--closed')">
+    <div class="tools-window-button tools-window__button" onclick="toogleWindow('.tools-window--top-window')">
       <svg class="tools-window-button__symbol" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M21 12l-18 12v-24z"/></svg>
     </div>
   </div>
   
   <canvas></canvas>
 
-  <div class="tools-window tools-window--right-window">
+  <div class="tools-window tools-window--right-window tools-window--right-window--closed">
     <div class="tools-window__item">
 
       <div class="cell-types-tool">
@@ -77,12 +77,12 @@
 
     </div>
 
-    <div class="tools-window-button tools-window__button" onclick="document.querySelector('.tools-window--right-window').classList.toggle('tools-window--right-window--closed')">
+    <div class="tools-window-button tools-window__button" onclick="toogleWindow('.tools-window--right-window')">
       <svg class="tools-window-button__symbol" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M21 12l-18 12v-24z"/></svg>
     </div>
   </div>
 
-  <div class="tools-window tools-window--left-window">
+  <div class="tools-window tools-window--left-window tools-window--left-window--closed">
     <div class="tools-window__item">
 
       <div class="buttons-line tools-window__buttons-line">
@@ -98,13 +98,37 @@
 
       <p class="tools-window__text">Кроків виконано: <span id="automaton-steps">0</span></p>
 
-      <div class="tools-window-button tools-window__button" onclick="document.querySelector('.tools-window--left-window').classList.toggle('tools-window--left-window--closed')">
+      <div class="tools-window-button tools-window__button" onclick="toogleWindow('.tools-window--left-window')">
         <svg class="tools-window-button__symbol" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M21 12l-18 12v-24z"/></svg>
       </div>
     </div>
   </div>
 
   <!-- <p id="fps-indicator">FPS: <span class="fps-num">000</span></p> -->
+
+  <script>
+    // WINDOWS TOGGLING
+
+    const openedWindows = JSON.parse(localStorage.getItem('openedWindows') || '[]')
+
+    openedWindows.forEach(nodeClass => {
+      document.querySelector('.' + nodeClass).classList.remove(nodeClass + '--closed')
+    })
+
+    function toogleWindow(selector) {
+      const nodeClass = selector.replace('.', ''),
+            node = document.querySelector(selector)
+      node.classList.toggle(nodeClass + '--closed')
+
+      if(node.classList.contains(nodeClass + '--closed') === false) openedWindows.push(nodeClass)
+      else {
+        const removeItemIndex = openedWindows.findIndex(itm => itm === nodeClass)
+        if(removeItemIndex !== -1) openedWindows.splice(removeItemIndex, 1)
+      }
+
+      localStorage.setItem('openedWindows', JSON.stringify(openedWindows))
+    }
+  </script>
 
   <script src="core.js"></script>
   <script src="index.js"></script>
