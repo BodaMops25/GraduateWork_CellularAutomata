@@ -9,7 +9,7 @@
 ## Посилання
 **Сайт:** [http://ec2-13-51-199-34.eu-north-1.compute.amazonaws.com](http://ec2-16-16-4-83.eu-north-1.compute.amazonaws.com)
 
-## Використані інструменти та технології
+## Використовувані інструменти та технології
 
 <a href="https://www.w3.org/html/" target="_blank">
 	<img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/html5/html5-original-wordmark.svg" alt="html5" width="40" height="40"/>
