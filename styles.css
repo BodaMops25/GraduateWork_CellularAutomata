@@ -1,5 +1,9 @@
 * {box-sizing: border-box}
 
+html, body {
+  overflow: hidden;
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -9,7 +13,7 @@ body {
   justify-content: center;
   align-items: center;
   background-color: #aaa;
-  overflow: hidden;
+  position: relative;
 }
 
 canvas {
@@ -234,8 +238,18 @@ canvas {
 /* MEDIA QUERIES */
 
 @media (max-width: 500px) {
+  .tools-window--top-window {
+    width: 100%;
+  }
+
   .tools-window--right-window,
   .tools-window--left-window {
     width: 80vw;
+  }
+}
+
+@media (max-width: 300px) {
+  .cell-rules {
+    max-height: 45%;
   }
 }
