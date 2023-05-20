@@ -129,7 +129,7 @@ frame()
 
 const paintToolNode = document.querySelector('#painting-tool')
 let isPainting = false,
-    isMouseDown = false
+    isPointerDown = false
 
 paintToolNode.addEventListener('click', () => {
   paintToolNode.classList.toggle('tools-window--top-window__tool-icon--active')
@@ -137,7 +137,7 @@ paintToolNode.addEventListener('click', () => {
 })
 
 function makeDrawing(event) {
-  if(isPainting && isMouseDown) {
+  if(isPainting && isPointerDown) {
     const realCellSize = cnvs.offsetWidth / cells_res,
           fieldX = Math.floor(event.offsetX / realCellSize),
           fieldY = Math.floor(event.offsetY / realCellSize)
@@ -147,12 +147,12 @@ function makeDrawing(event) {
   }
 }
 
-cnvs.addEventListener('mousedown', event => {
-  isMouseDown = true
+cnvs.addEventListener('pointerdown', event => {
+  isPointerDown = true
   makeDrawing(event)
 })
-cnvs.addEventListener('mouseup', () => isMouseDown = false)
-cnvs.addEventListener('mousemove', makeDrawing)
+cnvs.addEventListener('pointerup', () => isPointerDown = false)
+cnvs.addEventListener('pointermove', makeDrawing)
 
 // TIME MANIPULATING
 
