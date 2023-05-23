@@ -51,6 +51,9 @@ const server = http.createServer(async (req, res) => {
       case '.html':
         contentType = 'text/html'
         break
+      case '.svg':
+        contentType = 'image/svg+xml'
+        break
     }
   
     res.writeHead(statusCode, {'Content-Type': contentType})

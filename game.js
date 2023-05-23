@@ -110,11 +110,22 @@ function render() {
   })
 }
 
-// // random fill field
-// const density = .5
-// for(let i = 0; i < cells_res**2 * density; i++) {
-//   setCell(Math.round(randomBetween(0, cells_res - 1)), Math.round(randomBetween(0, cells_res - 1)), 'Білий', 'Білий')
-// }
+// TOOLS
+
+function randomFillCells(cellTypeId, density) {
+  for(let i = 0; i < cells_res**2 * density; i++) {
+    setCell(Math.round(randomBetween(0, cells_res - 1)), Math.round(randomBetween(0, cells_res - 1)), cellTypeId, cellTypeId)
+  }
+  render()
+}
+
+function clearField() {
+  const firstCellType = getFirstCellTypeTitle()
+  gameFieldWhile((cell, x, y) => {
+    setCell(x, y, firstCellType, firstCellType)
+  })
+  render()
+}
 
 const automatonStepsNode = document.querySelector('#automaton-steps')
 let automatonSteps = 0
@@ -142,8 +153,8 @@ function makeDrawing(event) {
           fieldX = Math.floor(event.offsetX / realCellSize),
           fieldY = Math.floor(event.offsetY / realCellSize)
 
-    setCell(fieldX, fieldY, currentCellId(), currentCellId())
-    drawCell(fieldX, fieldY, cells_size, cellTypes[currentCellId()].color)
+    setCell(fieldX, fieldY, getCurrentCellId(), getCurrentCellId())
+    drawCell(fieldX, fieldY, cells_size, cellTypes[getCurrentCellId()].color)
   }
 }
 

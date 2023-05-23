@@ -8,6 +8,18 @@ const isVerticalDevice = window.innerHeight > window.innerWidth ? true : false,
       // biggerSide = isVerticalDevice ? realSizeHeight : realSizeWidth,
       smallerSide = !isVerticalDevice ? window.innerHeight : window.innerWidth
 
+// POPUPS
+
+document.querySelectorAll('.popup').forEach(node => {
+  node.querySelector('.popup__close-button').addEventListener('click', () => {
+    node.classList.remove('popup--active')
+  })
+})
+
+function openPopup(id) {
+  document.querySelector('#' + id + '.popup').classList.add('popup--active')
+}
+
 // FPS TOOL
 
 const FPSTOOL = {

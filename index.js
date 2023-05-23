@@ -111,7 +111,7 @@ function deleteCellType(title) {
   updateLocalStorage()
 }
 
-function currentCellId() {
+function getCurrentCellId() {
   return nodes.cellTypesSelect.selectedOptions[0].value
 }
 
@@ -163,7 +163,7 @@ function createCellRuleElement(itemRule, ruleIndex) {
         probabilityInput = item.querySelector('#cellRulesProbability_' + inputRandId),
         changeCellTypeOnSelect = item.querySelector('#ruleChangingType_' + inputRandId),
         deleteRuleBtn = item.querySelector('.cell-rule-item__delete-button'),
-        ruleObj = cellTypes[currentCellId()].rules[ruleIndex]
+        ruleObj = cellTypes[getCurrentCellId()].rules[ruleIndex]
 
   item.querySelectorAll('.cell-rule-item__cells-neighbors-select').forEach((itm, index) => {
     itm.addEventListener('input', () => {
@@ -207,7 +207,7 @@ function createCellRuleElement(itemRule, ruleIndex) {
   })
 
   deleteRuleBtn.addEventListener('click', () => {
-    deleteCellRule(cellTypes[currentCellId()], ruleIndex)
+    deleteCellRule(cellTypes[getCurrentCellId()], ruleIndex)
     item.remove()
   })
 
@@ -231,7 +231,7 @@ nodes.cellTypesSelect.addEventListener('input', event => {
 })
 
 nodes.addRuleBtn.addEventListener('click', () => {
-  const selectedCellTitle = currentCellId()
+  const selectedCellTitle = getCurrentCellId()
 
   cellTypes[selectedCellTitle].rules.push({
     cellNeighbors: {
@@ -247,4 +247,4 @@ nodes.addRuleBtn.addEventListener('click', () => {
 
 // INITS
 
-setCellRules(currentCellId())
+setCellRules(getCurrentCellId())

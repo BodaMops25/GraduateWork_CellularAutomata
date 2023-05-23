@@ -8,11 +8,42 @@
 </head>
 <body>
 
+  <button class="info-button" onclick="openPopup('app-guide')">i</button>
+
+  <div id="app-guide" class="popup popup">
+    <div class="popup__content-container">
+      <div class="popup__content">
+        <h3>Як користуватись додатком</h3>
+        <p>Зліва знаходиться вікно контролю часом кліткового автомата.<br>
+           Пауза зупиняє анімацію кліткового автомата.
+           Анімація анімую клітковий автома.
+           Наступний крок робить обробку стану кожної клітинки поля 1 раз
+        </p>
+        <p>З правого боку знаходиться вікно додавання нових типів клітинок та редагування правил для них. Найперше поле 'тип клітинок' визначає поточний тип клітинок для всьго додатку</p>
+        <p>
+          Зверху знаходиться вікно інстурментів<br>
+          Перший інструмент - це малювання на полі, якщо його увімкнути, то при натисканні лівої кнопки миші на полі автомата, в певному місці будуть з'являтися клітинки поточного типу клітинок вказаного у правому вікні.
+          Другий інструмент - це випадкове заповнення поля, при натискані на цей інстумент, частина клітинок перетвориться на поточний тип клітинок.
+          Третій інструмент - це очищення поля, воно дає змогу очистити поле від різних типів клітинок.
+        </p>
+      </div>
+      <div class="popup__close-button">X</div>
+    </div>
+  </div>
+
   <div class="tools-window tools-window--top-window tools-window--top-window--closed">
     <div class="tools-window__item">
 
-      <div id="painting-tool" class="tools-window--top-window__tool-icon">
+      <div id="painting-tool" class="tools-window--top-window__tool-icon" title="Малювання">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M7.127 22.562l-7.127 1.438 1.438-7.128 5.689 5.69zm1.414-1.414l11.228-11.225-5.69-5.692-11.227 11.227 5.689 5.69zm9.768-21.148l-2.816 2.817 5.691 5.691 2.816-2.819-5.691-5.689z"/></svg>
+      </div>
+
+      <div id="random-fill-tool" class="tools-window--top-window__tool-icon" title="Випадкове заповнення поля" onclick="randomFillCells(getCurrentCellId(), .5)">
+        <img src="/resources/images/cellular-automata.svg" alt="cellular automata icon">
+      </div>
+
+      <div id="clear-field-tool" class="tools-window--top-window__tool-icon" title="Очищення поля" onclick="clearField()">
+        <img src="/resources/images/clear-icon.png" alt="cellular automata icon">
       </div>
       
     </div>
@@ -32,7 +63,7 @@
           <label class="cell-types-tool__selector-title" for="cell-types-select">Тип клітинок:</label>
           <select id="cell-types-select" class="cell-types-tool__select">
             <option value="Чорний">Чорний</option>
-            <option value="Білий">Білий</option>
+            <option value="Білий" selected>Білий</option>
           </select>
           <button class="delete-button cell-types-tool__delete-type">🗑️</button>
         </div>
@@ -133,6 +164,13 @@
   <script src="core.js"></script>
   <script src="index.js"></script>
   <script src="game.js"></script>
+
+  <script>
+    // init
+
+    randomFillCells(getCurrentCellId(), .5)
+    makeInterval()
+  </script>
 
 </body>
 </html>
