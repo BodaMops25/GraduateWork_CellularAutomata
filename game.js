@@ -20,7 +20,7 @@ const cells_res = 50,
 
 for(let i = 0; i < cells_res; i++) {
   game_field[i] = []
-  for(let j = 0; j < cells_res; j++) game_field[i][j] = {from: getFirstCellTypeTitle(), to: getFirstCellTypeTitle()}
+  for(let j = 0; j < cells_res; j++) game_field[i][j] = {from: getBasicCellId(), to: getBasicCellId()}
 }
 
 function gameFieldWhile(callbackCells, callbackRows) {
@@ -120,9 +120,9 @@ function randomFillCells(cellTypeId, density) {
 }
 
 function clearField() {
-  const firstCellType = getFirstCellTypeTitle()
+  const cellTypeId = getBasicCellId()
   gameFieldWhile((cell, x, y) => {
-    setCell(x, y, firstCellType, firstCellType)
+    setCell(x, y, cellTypeId, cellTypeId)
   })
   render()
 }

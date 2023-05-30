@@ -3,6 +3,7 @@ let cellTypes = null
 if(localStorage.getItem('cellTypes') === null) {
   cellTypes = {
     'Чорний': {
+      isBasic: true,
       color: '#000',
       rules: [
         {
@@ -36,12 +37,14 @@ function updateLocalStorage() {
   localStorage.setItem('cellTypes', JSON.stringify(cellTypes))
 }
 
-function getFirstCellTypeTitle() {
+function getBasicCellId() {
   let title = ''
 
   for(const id in cellTypes) {
-    title = id
-    break
+    if(cellTypes[id].isBasic) {
+      title = id
+      break
+    }
   }
   return title
 }
@@ -49,7 +52,9 @@ function getFirstCellTypeTitle() {
 const nodes = {
   cellTypesSelect: document.querySelector('#cell-types-select'),
   cellAddingForm: document.querySelector('.cell-types-tool__cell-adding-form'),
-  cellDeleteBtn: document.querySelector('.cell-types-tool__delete-type'),
+  cellDeleteBtn: document.querySelector('#delete-cell-type-button'),
+  isBasicCellText: document.querySelector('#is-basic-cell-type-text'),
+  makeBasicCell: document.querySelector('#make-basic-cell'),
   rulesContainer: document.querySelector('.cell-rules'),
   addRuleBtn: document.querySelector('.button-add__button')
 }
@@ -79,7 +84,7 @@ nodes.cellAddingForm.addEventListener('submit', event => {
   updateLocalStorage()
 })
 
-nodes.cellDeleteBtn.addEventListener('click', () => {
+nodes.cellDeleteBtn?.addEventListener('click', () => {
   if(confirm('Ви точно хочете видалити цей тип клітинок?') === false) return
 
   const selectedTitle = nodes.cellTypesSelect.selectedOptions[0].innerText
@@ -103,6 +108,15 @@ function deleteCellType(title) {
   for(const id in cellTypes) {
     if(id === title) {
       delete cellTypes[id]
+
+      const basicType = getBasicCellId()
+
+      gameFieldWhile(cell => {
+        if(cell.from === title) cell.from = basicType
+        if(cell.to === title) cell.from = basicType
+      })
+      render()
+
       break
     }
   }
@@ -220,11 +234,35 @@ function deleteCellRule(cell, ruleIndex) {
 }
 
 function setCellRules(cellTitle) {
+  const cellType = cellTypes[cellTitle]
+
+  if(cellType.isBasic) {
+    nodes.cellDeleteBtn.style.display = 'none'
+    nodes.isBasicCellText.style.display = ''
+    nodes.makeBasicCell.style.display = 'none'
+  }
+  else {
+    nodes.cellDeleteBtn.style.display = ''
+    nodes.isBasicCellText.style.display = 'none'
+    nodes.makeBasicCell.style.display = ''
+  }
+
   nodes.rulesContainer.innerHTML = ''
-  cellTypes[cellTitle].rules.forEach((itm, index) => {
+  cellType.rules.forEach((itm, index) => {
     nodes.rulesContainer.insertAdjacentElement('beforeend', createCellRuleElement(itm, index))
   })
 }
+
+function makeBasicCellFunction(cellId) {
+  delete cellTypes[getBasicCellId()].isBasic
+  if(cellTypes[cellId]) cellTypes[cellId].isBasic = true
+  updateLocalStorage()
+}
+
+nodes.makeBasicCell.addEventListener('click', () => {
+  makeBasicCellFunction(getCurrentCellId())
+  nodes.makeBasicCell.style.display = 'none'
+})
 
 nodes.cellTypesSelect.addEventListener('input', event => {
   setCellRules(event.target.value)

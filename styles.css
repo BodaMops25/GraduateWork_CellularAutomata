@@ -87,6 +87,12 @@ canvas {
 
 /* TOOLS WINDOW */
 
+.cell-types-tool_cell-is-basic,
+#make-basic-cell {
+  margin: 5px 0;
+  margin-bottom: 10px;
+}
+
 .tools-window {
   position: absolute;
   background-color: #ddd;
