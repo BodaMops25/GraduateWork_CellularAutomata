@@ -33,8 +33,8 @@ if(app.game_field === null) {
 
 function gameFieldWhile(callbackCells, callbackRows) {
   for(let i = 0; i < cells_res; i++) {
-    for(let j = 0; j < cells_res; j++) callbackCells(app.game_field[i][j], i, j, app.game_field)
     if(callbackRows) callbackRows(app.game_field[i], i, app.game_field)
+    for(let j = 0; j < cells_res; j++) callbackCells(app.game_field[i][j], j, i, app.game_field)
   }
 }
 
@@ -89,8 +89,25 @@ function calculateCell(x, y) {
   return getCell(x, y) 
 }
 
+const automatonStepsNode = document.querySelector('#automaton-steps')
+
 function calculateField() {
-  gameFieldWhile((value, y, x) => calculateCell(x, y))
+  const clonedFiled = []
+
+  gameFieldWhile(
+    (cell, x, y) => {
+      calculateCell(x, y)
+
+      clonedFiled[y][x] = cell.from
+    }
+    ,(row, i) => clonedFiled[i] = []
+  )
+
+  automatonStepsNode.innerText = ++app.generation
+  updateAppStorage()
+
+  game_fields_history[app.generation] = clonedFiled
+  // updateGameFieldsStorage()
 }
 
 // RENDER
@@ -105,7 +122,7 @@ function drawCell(x, y, size, color) {
 
 function render() {
   ctx.clearRect(0, 0, cnvs_res, cnvs_res)
-  gameFieldWhile((cell, y, x, field) => {
+  gameFieldWhile((cell, x, y, field) => {
 
     const cellType = cellTypes[cell.to !== null ? cell.to : cell.from]
     if(cellType === undefined) return
@@ -113,6 +130,8 @@ function render() {
     drawCell(x, y, cells_size, cellType.color)
     cell.from = cell.to
   })
+
+  updateAppStorage()
 }
 
 // TOOLS
@@ -139,15 +158,9 @@ function fillField(cellTypeId) {
   render()
 }
 
-const automatonStepsNode = document.querySelector('#automaton-steps')
-
 function frame() {
   calculateField()
   render()
-  automatonStepsNode.innerText = ++app.generation
-
-  // app.app.game_field = app.game_field
-  updateAppStorage()
 }
 
 // PAINTING
@@ -190,7 +203,11 @@ const pauseNode = document.querySelector('#pause-automaton'),
 
 function makeInterval() {
   clearInterval(interval)
-  interval = setInterval(frame, 1000 / framerateInput.value)
+  interval = setInterval(() => {
+    frame()
+
+    FPSTOOL.checkFPS()
+  }, 1000 / framerateInput.value)
 
   app.isPlayed = true
   updateAppStorage()
@@ -219,10 +236,3 @@ framerateInput.addEventListener('input', () => {
 render()
 framerateInput.value = app.fps
 automatonStepsNode.innerText = app.generation
-
-// INTERVAL
-
-// setInterval(() => {
-//   frame()
-//   // FPSTOOL.checkFPS()
-// }, 0)

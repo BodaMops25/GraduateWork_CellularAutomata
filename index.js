@@ -1,5 +1,6 @@
 let cellTypes = null,
-    app = null
+    app = null,
+    game_fields_history = JSON.parse(localStorage.getItem('game_fields_history') || '[]')
 
 if(localStorage.getItem('cellTypes') === null) {
   cellTypes = {
@@ -53,6 +54,10 @@ function updateLocalStorage() {
 
 function updateAppStorage() {
   localStorage.setItem('app', JSON.stringify(app))
+}
+
+function updateGameFieldsStorage() {
+  localStorage.setItem('game_fields_history', JSON.stringify(game_fields_history))
 }
 
 function getBasicCellId() {

@@ -38,7 +38,7 @@ const FPSTOOL = {
   },
 }
 
-// setInterval(() => FPSTOOL.showFPS(), 250)
+setInterval(() => FPSTOOL.showFPS(), 250)
 
 // TOOLS WINDOW
 
