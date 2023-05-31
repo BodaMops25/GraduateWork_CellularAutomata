@@ -1,4 +1,5 @@
-let cellTypes = null
+let cellTypes = null,
+    app = null
 
 if(localStorage.getItem('cellTypes') === null) {
   cellTypes = {
@@ -33,8 +34,25 @@ if(localStorage.getItem('cellTypes') === null) {
 }
 else cellTypes = JSON.parse(localStorage.getItem('cellTypes'))
 
+if(localStorage.getItem('app') === null) {
+
+  app = {
+    isPlayed: true,
+    generation: 0,
+    fps: 60,
+    game_field: null
+  }
+
+  updateAppStorage()
+}
+else app = JSON.parse(localStorage.getItem('app'))
+
 function updateLocalStorage() {
   localStorage.setItem('cellTypes', JSON.stringify(cellTypes))
+}
+
+function updateAppStorage() {
+  localStorage.setItem('app', JSON.stringify(app))
 }
 
 function getBasicCellId() {
@@ -105,6 +123,7 @@ function addingCellType(title, color) {
 }
 
 function deleteCellType(title) {
+  if(cellTypes[title] && cellTypes[title].isBasic) return
   for(const id in cellTypes) {
     if(id === title) {
       delete cellTypes[id]
@@ -113,7 +132,7 @@ function deleteCellType(title) {
 
       gameFieldWhile(cell => {
         if(cell.from === title) cell.from = basicType
-        if(cell.to === title) cell.from = basicType
+        if(cell.to === title) cell.to = basicType
       })
       render()
 
@@ -284,5 +303,7 @@ nodes.addRuleBtn.addEventListener('click', () => {
 })
 
 // INITS
+
+nodes.cellTypesSelect.innerHTML = cellTypesToOptions()
 
 setCellRules(getCurrentCellId())

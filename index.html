@@ -43,7 +43,11 @@
       </div>
 
       <div id="clear-field-tool" class="tools-window--top-window__tool-icon" title="Очищення поля" onclick="clearField()">
-        <img src="/resources/images/clear-icon.png" alt="cellular automata icon">
+        <img src="/resources/images/clear-icon.png" alt="clear icon">
+      </div>
+
+      <div id="fill-field-tool" class="tools-window--top-window__tool-icon" title="Повне заповнення поля" onclick="fillField(getCurrentCellId())">
+        <img src="/resources/images/cells-icon.svg" alt="cells icon">
       </div>
       
     </div>
@@ -170,8 +174,7 @@
   <script>
     // init
 
-    randomFillCells(getCurrentCellId(), .5)
-    makeInterval()
+    if(app.isPlayed) makeInterval()
   </script>
 
 </body>

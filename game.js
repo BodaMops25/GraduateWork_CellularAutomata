@@ -15,25 +15,33 @@ cnvs.style.height = cnvsPageSize + 'px'
 // GAME SETUP
 
 const cells_res = 50,
-      cells_size = cnvs_res / cells_res + 1,
-      game_field = []
+      cells_size = cnvs_res / cells_res + 1
 
-for(let i = 0; i < cells_res; i++) {
-  game_field[i] = []
-  for(let j = 0; j < cells_res; j++) game_field[i][j] = {from: getBasicCellId(), to: getBasicCellId()}
+      const cnvsCllStp = cnvs_res / cells_res, // cell space size in pixels
+      cntrStpCll = (cnvsCllStp - cells_size) / 2 // indent from cell space for center cell
+
+if(app.game_field === null) {
+  app.game_field = []
+
+  for(let i = 0; i < cells_res; i++) {
+    app.game_field[i] = []
+    for(let j = 0; j < cells_res; j++) app.game_field[i][j] = {from: getBasicCellId(), to: getBasicCellId()}
+  }
+
+  randomFillCells('Білий', .5)
 }
 
 function gameFieldWhile(callbackCells, callbackRows) {
   for(let i = 0; i < cells_res; i++) {
-    for(let j = 0; j < cells_res; j++) callbackCells(game_field[i][j], i, j, game_field)
-    if(callbackRows) callbackRows(game_field[i], i, game_field)
+    for(let j = 0; j < cells_res; j++) callbackCells(app.game_field[i][j], i, j, app.game_field)
+    if(callbackRows) callbackRows(app.game_field[i], i, app.game_field)
   }
 }
 
 // CALCULATION
 
 function getCell(x, y) {
-  return game_field[y] && game_field[y][x] !== undefined ? game_field[y][x] : null
+  return app.game_field[y] && app.game_field[y][x] !== undefined ? app.game_field[y][x] : null
 }
 
 function setCell(x, y, from_value, to_value) {
@@ -95,9 +103,6 @@ function drawCell(x, y, size, color) {
   ctx.fillRect(drawX, drawY, cells_size, cells_size)
 }
 
-const cnvsCllStp = cnvs_res / cells_res, // cell space size in pixels
-      cntrStpCll = (cnvsCllStp - cells_size) / 2 // indent from cell space for center cell
-
 function render() {
   ctx.clearRect(0, 0, cnvs_res, cnvs_res)
   gameFieldWhile((cell, y, x, field) => {
@@ -127,14 +132,23 @@ function clearField() {
   render()
 }
 
-const automatonStepsNode = document.querySelector('#automaton-steps')
-let automatonSteps = 0
-function frame() {
+function fillField(cellTypeId) {
+  gameFieldWhile((cell, x, y) => {
+    setCell(x, y, cellTypeId, cellTypeId)
+  })
   render()
-  calculateField()
-  automatonStepsNode.innerText = automatonSteps++
 }
-frame()
+
+const automatonStepsNode = document.querySelector('#automaton-steps')
+
+function frame() {
+  calculateField()
+  render()
+  automatonStepsNode.innerText = ++app.generation
+
+  // app.app.game_field = app.game_field
+  updateAppStorage()
+}
 
 // PAINTING
 
@@ -177,6 +191,9 @@ const pauseNode = document.querySelector('#pause-automaton'),
 function makeInterval() {
   clearInterval(interval)
   interval = setInterval(frame, 1000 / framerateInput.value)
+
+  app.isPlayed = true
+  updateAppStorage()
 }
 
 nextStepNode.addEventListener('click', frame)
@@ -184,10 +201,24 @@ animateNode.addEventListener('click', makeInterval)
 pauseNode.addEventListener('click', () => {
   clearInterval(interval)
   interval = null
+  app.isPlayed = false
+
+  updateAppStorage()
 })
 framerateInput.addEventListener('input', () => {
-  if(1 <= +framerateInput.value && +framerateInput.value <= 1000) makeInterval()
+  if(1 <= +framerateInput.value && +framerateInput.value <= 1000) {
+    app.fps = +framerateInput.value
+    updateAppStorage()
+
+    if(app.isPlayed) makeInterval()
+  }
 })
+
+// INIT
+
+render()
+framerateInput.value = app.fps
+automatonStepsNode.innerText = app.generation
 
 // INTERVAL
 
