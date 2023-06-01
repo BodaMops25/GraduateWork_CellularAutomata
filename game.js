@@ -107,7 +107,10 @@ function calculateField() {
   updateAppStorage()
 
   game_fields_history[app.generation] = clonedFiled
-  // updateGameFieldsStorage()
+}
+
+function setField(fieldImgae) {
+  
 }
 
 // RENDER
@@ -236,3 +239,8 @@ framerateInput.addEventListener('input', () => {
 render()
 framerateInput.value = app.fps
 automatonStepsNode.innerText = app.generation
+
+
+
+
+window.addEventListener('beforeunload', updateGameFieldsStorage)

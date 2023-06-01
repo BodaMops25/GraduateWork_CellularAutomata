@@ -8,7 +8,10 @@
 </head>
 <body>
 
-  <button class="info-button" onclick="openPopup('app-guide')">i</button>
+  <button class="screen-button screen-button--info" onclick="openPopup('app-guide')" title="Довідка">i</button>
+  <button class="screen-button screen-button--clear-game" title="Очистити проект" onclick="resetProject()">
+    <img src="resources/images/trash.svg" alt="trash icon">
+  </button>
 
   <div id="app-guide" class="popup popup">
     <div class="popup__content-container">

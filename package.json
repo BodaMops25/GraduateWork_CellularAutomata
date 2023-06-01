@@ -3,10 +3,15 @@
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
-  "scripts": {},
+  "scripts": {
+    "serve": "nodemon server.js"
+  },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "http": "^0.0.1-security"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
   }
 }

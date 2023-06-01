@@ -20,6 +20,19 @@ function openPopup(id) {
   document.querySelector('#' + id + '.popup').classList.add('popup--active')
 }
 
+// APP
+
+function resetProject() {
+  const answer = confirm('Ви точно хочете очистити проет?')
+  if(answer) {
+    localStorage.removeItem('app')
+    localStorage.removeItem('cellTypes')
+    localStorage.removeItem('game_fields_history')
+
+    location.reload()
+  }
+}
+
 // FPS TOOL
 
 const FPSTOOL = {
@@ -45,6 +58,3 @@ const FPSTOOL = {
 }
 
 setInterval(() => FPSTOOL.showFPS(), 250)
-
-// TOOLS WINDOW
-

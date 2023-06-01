@@ -23,7 +23,7 @@ canvas {
   touch-action: none;
 }
 
-.info-button {
+.screen-button {
   width: 40px;
   height: 40px;
   border-radius: 1000vw;
@@ -39,6 +39,15 @@ canvas {
   font-size: 30px;
   cursor: pointer;
   font-family: serif;
+}
+
+.screen-button > img {
+  width: 80%;
+  height: 80%;
+}
+
+.screen-button--clear-game {
+  left: 60px;
 }
 
 /* POPUPS */

@@ -65,6 +65,7 @@ const server = http.createServer(async (req, res) => {
 const requestHandlers = {
   'test-command' : async (req, res, url) => {
     try {
+      console.log('is test command done')
       return [200, url + ': is ok']
     }
     catch(err) {
