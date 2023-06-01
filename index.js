@@ -3,33 +3,35 @@ let cellTypes = null,
     game_fields_history = JSON.parse(localStorage.getItem('game_fields_history') || '[]')
 
 if(localStorage.getItem('cellTypes') === null) {
-  cellTypes = {
-    'Чорний': {
+  cellTypes = [
+    {
+      title: 'Чорний',
       isBasic: true,
       color: '#000',
       rules: [
         {
           cellNeighbors: {
-            'Білий': [3]
+            1: [3]
           },
           probability: 100,
-          changeCellTypeOn: 'Білий'
+          changeCellTypeOn: 1
         }
       ]
     },
-    'Білий': {
+    {
+      title: 'Білий',
       color: '#fff',
       rules: [
         {
           cellNeighbors: {
-            'Білий': [0, 1, 4, 5, 6, 7, 8]
+            1: [0, 1, 4, 5, 6, 7, 8]
           },
           probability: 100,
-          changeCellTypeOn: 'Чорний'
+          changeCellTypeOn: 0
         }
       ]
     }
-  }
+  ]
 
   updateLocalStorage()
 }
@@ -60,16 +62,26 @@ function updateGameFieldsStorage() {
   localStorage.setItem('game_fields_history', JSON.stringify(game_fields_history))
 }
 
-function getBasicCellId() {
-  let title = ''
+function getBasicCellIndex() {
+  const result = cellTypes.findIndex(itm => itm.isBasic)
 
-  for(const id in cellTypes) {
-    if(cellTypes[id].isBasic) {
-      title = id
-      break
-    }
+  if(result === -1) {
+    console.warn('Basic cell type not found')
+    return
   }
-  return title
+
+  return result
+}
+
+function getBasicCell() {
+  const result = cellTypes.find(itm => itm.isBasic)
+
+  if(result === -1) {
+    console.warn('Basic cell type not found')
+    return
+  }
+
+  return result
 }
 
 const nodes = {
@@ -103,62 +115,73 @@ nodes.cellAddingForm.addEventListener('submit', event => {
 
   nodes.cellAddingForm.reset()
 
-  addingCellType(inputTitle, inputColor)
+  addCellType(inputTitle, inputColor)
   updateLocalStorage()
 })
 
 nodes.cellDeleteBtn?.addEventListener('click', () => {
   if(confirm('Ви точно хочете видалити цей тип клітинок?') === false) return
 
-  const selectedTitle = nodes.cellTypesSelect.selectedOptions[0].innerText
+  const selectedIndex = +nodes.cellTypesSelect.selectedOptions[0].innerText
   nodes.cellTypesSelect.selectedOptions[0].remove()
 
-  deleteCellType(selectedTitle)
+  deleteCellType(selectedIndex)
   updateLocalStorage()
 })
 
-function addingCellType(title, color) {
+function addCellType(title, color) {
 
-  cellTypes[title] = {
+  cellTypes.push({
+    title: title,
     color: color,
     rules: []
-  }
+  })
   console.log('New cell type:', title, color)
   updateLocalStorage()
 }
 
-function deleteCellType(title) {
-  if(cellTypes[title] && cellTypes[title].isBasic) return
-  for(const id in cellTypes) {
-    if(id === title) {
-      delete cellTypes[id]
+function deleteCellType(index) {
 
-      const basicType = getBasicCellId()
+  if(cellTypes[index]) {
+    if(cellTypes[index].isBasic) return
 
-      gameFieldWhile(cell => {
-        if(cell.from === title) cell.from = basicType
-        if(cell.to === title) cell.to = basicType
-      })
-      render()
+    cellTypes.splice(index, 1)
 
-      break
-    }
+    const basicType = getBasicCell()
+
+    gameFieldWhile(cell => {
+      if(cell.from === title) cell.from = basicType.title
+      if(cell.to === title) cell.to = basicType.title
+    })
+    render()
   }
 
   console.log('Cell type is deleted:', title)
   updateLocalStorage()
 }
 
-function getCurrentCellId() {
-  return nodes.cellTypesSelect.selectedOptions[0].value
+function getCurrentCellIndex() {
+  const index = +nodes.cellTypesSelect.selectedOptions[0].value
+
+  if(cellTypes[index]) return index
+  else {
+    console.warn('Current cell type not existing')
+  }
+}
+
+function getCurrentCell() {
+  const index = +nodes.cellTypesSelect.selectedOptions[0].value
+
+  if(cellTypes[index]) return cellTypes[index]
+  else {
+    console.warn('Current cell type not existing')
+  }
 }
 
 function cellTypesToOptions(selectedTitle) {
-  let htmlStr = ''
-  for(let title in cellTypes) {
-    htmlStr += `<option value="${title}" ${title === selectedTitle ? 'selected' : ''}>${title}</option>`
-  }
-  return htmlStr
+  return cellTypes.reduce((htmlStr, itm, i) => {
+    return htmlStr += `<option value="${i}" ${itm.title === selectedTitle ? 'selected' : ''}>${itm.title}</option>`
+  }, '')
 }
 
 function createCellRuleElement(itemRule, ruleIndex) {
@@ -201,13 +224,13 @@ function createCellRuleElement(itemRule, ruleIndex) {
         probabilityInput = item.querySelector('#cellRulesProbability_' + inputRandId),
         changeCellTypeOnSelect = item.querySelector('#ruleChangingType_' + inputRandId),
         deleteRuleBtn = item.querySelector('.cell-rule-item__delete-button'),
-        ruleObj = cellTypes[getCurrentCellId()].rules[ruleIndex]
+        ruleObj = cellTypes[getCurrentCellIndex()].rules[ruleIndex]
 
   item.querySelectorAll('.cell-rule-item__cells-neighbors-select').forEach((itm, index) => {
     itm.addEventListener('input', () => {
       const cellNeighbors = ruleObj.cellNeighbors,
             currentType = itm.dataset.currentType,
-            newType = itm.selectedOptions[0].value
+            newType = +itm.selectedOptions[0].value
 
       cellNeighbors[newType] = cellNeighbors[currentType]
       delete cellNeighbors[currentType]
@@ -240,12 +263,12 @@ function createCellRuleElement(itemRule, ruleIndex) {
   })
 
   changeCellTypeOnSelect.addEventListener('input', () => {
-    ruleObj.changeCellTypeOn = changeCellTypeOnSelect.selectedOptions[0].value
+    ruleObj.changeCellTypeOn = +changeCellTypeOnSelect.selectedOptions[0].value
     updateLocalStorage()
   })
 
   deleteRuleBtn.addEventListener('click', () => {
-    deleteCellRule(cellTypes[getCurrentCellId()], ruleIndex)
+    deleteCellRule(cellTypes[getCurrentCellIndex()], ruleIndex)
     item.remove()
   })
 
@@ -257,8 +280,8 @@ function deleteCellRule(cell, ruleIndex) {
   updateLocalStorage()
 }
 
-function setCellRules(cellTitle) {
-  const cellType = cellTypes[cellTitle]
+function setCellRules(cellIndex) {
+  const cellType = cellTypes[cellIndex]
 
   if(cellType.isBasic) {
     nodes.cellDeleteBtn.style.display = 'none'
@@ -277,14 +300,14 @@ function setCellRules(cellTitle) {
   })
 }
 
-function makeBasicCellFunction(cellId) {
-  delete cellTypes[getBasicCellId()].isBasic
-  if(cellTypes[cellId]) cellTypes[cellId].isBasic = true
+function makeBasicCellFunction(cellIndex) {
+  delete cellTypes[getBasicCellIndex()].isBasic
+  if(cellTypes[cellIndex]) cellTypes[cellIndex].isBasic = true
   updateLocalStorage()
 }
 
 nodes.makeBasicCell.addEventListener('click', () => {
-  makeBasicCellFunction(getCurrentCellId())
+  makeBasicCellFunction(getCurrentCellIndex())
   nodes.makeBasicCell.style.display = 'none'
 })
 
@@ -293,22 +316,22 @@ nodes.cellTypesSelect.addEventListener('input', event => {
 })
 
 nodes.addRuleBtn.addEventListener('click', () => {
-  const selectedCellTitle = getCurrentCellId()
+  const selectedCellIndex = getCurrentCellIndex()
 
-  cellTypes[selectedCellTitle].rules.push({
+  cellTypes[selectedCellIndex].rules.push({
     cellNeighbors: {
-      [selectedCellTitle]: [0, 1, 4]
+      [selectedCellIndex]: [0, 1, 4]
     },
     probability: 1,
-    changeCellTypeOn: selectedCellTitle
+    changeCellTypeOn: selectedCellIndex
   })
   updateLocalStorage()
 
-  setCellRules(selectedCellTitle)
+  setCellRules(selectedCellIndex)
 })
 
 // INITS
 
 nodes.cellTypesSelect.innerHTML = cellTypesToOptions()
 
-setCellRules(getCurrentCellId())
+setCellRules(getCurrentCellIndex())

@@ -25,13 +25,19 @@ function openPopup(id) {
 const FPSTOOL = {
   node: document.querySelector('#fps-indicator > .fps-num'),
   time: new Date(),
-  fps_number: 0,
+  max_checks_num: 50,
+  checks_for_avarage: [],
+  get fps_number() {
+    return (this.checks_for_avarage.reduce((sum, num) => sum + num, 0) / this.checks_for_avarage.length).toFixed(1)
+  },
   checkFPS: function() {
     const newDate = new Date(),
           fps = +(1000 / (newDate - this.time)).toFixed(2)
 
     this.time = newDate
-    return this.fps_number = fps
+    
+    if(this.checks_for_avarage[this.max_checks_num-1]) this.checks_for_avarage.shift()
+    this.checks_for_avarage.push(fps)
   },
   showFPS: function() {
     return this.node.innerText = this.fps_number

@@ -25,10 +25,10 @@ if(app.game_field === null) {
 
   for(let i = 0; i < cells_res; i++) {
     app.game_field[i] = []
-    for(let j = 0; j < cells_res; j++) app.game_field[i][j] = {from: getBasicCellId(), to: getBasicCellId()}
+    for(let j = 0; j < cells_res; j++) app.game_field[i][j] = {from: getBasicCellIndex(), to: getBasicCellIndex()}
   }
 
-  randomFillCells('Білий', .5)
+  randomFillCells(1, .5)
 }
 
 function gameFieldWhile(callbackCells, callbackRows) {
@@ -51,7 +51,7 @@ function setCell(x, y, from_value, to_value) {
     if(to_value !== undefined) cell.to = to_value
     return cell
   }
-  else console.warn('cell not exist')
+  else console.warn('Cell not existing')
 }
 
 function getCellNeighbors(x, y) {
@@ -136,24 +136,24 @@ function render() {
 
 // TOOLS
 
-function randomFillCells(cellTypeId, density) {
+function randomFillCells(cellTypeIndex, density) {
   for(let i = 0; i < cells_res**2 * density; i++) {
-    setCell(Math.round(randomBetween(0, cells_res - 1)), Math.round(randomBetween(0, cells_res - 1)), cellTypeId, cellTypeId)
+    setCell(Math.round(randomBetween(0, cells_res - 1)), Math.round(randomBetween(0, cells_res - 1)), cellTypeIndex, cellTypeIndex)
   }
   render()
 }
 
 function clearField() {
-  const cellTypeId = getBasicCellId()
+  const cellTypeIndex = getBasicCellIndex()
   gameFieldWhile((cell, x, y) => {
-    setCell(x, y, cellTypeId, cellTypeId)
+    setCell(x, y, cellTypeIndex, cellTypeIndex)
   })
   render()
 }
 
-function fillField(cellTypeId) {
+function fillField(cellTypeIndex) {
   gameFieldWhile((cell, x, y) => {
-    setCell(x, y, cellTypeId, cellTypeId)
+    setCell(x, y, cellTypeIndex, cellTypeIndex)
   })
   render()
 }
@@ -180,8 +180,8 @@ function makeDrawing(event) {
           fieldX = Math.floor(event.offsetX / realCellSize),
           fieldY = Math.floor(event.offsetY / realCellSize)
 
-    setCell(fieldX, fieldY, getCurrentCellId(), getCurrentCellId())
-    drawCell(fieldX, fieldY, cells_size, cellTypes[getCurrentCellId()].color)
+    setCell(fieldX, fieldY, getCurrentCellIndex(), getCurrentCellIndex())
+    drawCell(fieldX, fieldY, cells_size, cellTypes[getCurrentCellIndex()].color)
   }
 }
 
