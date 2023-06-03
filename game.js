@@ -30,10 +30,7 @@ if(app.game_field === null) {
 
   randomFillCells(1, .5)
 
-  game_fields_history[0] = []
-  gameFieldWhile((cell, x, y) => {
-    game_fields_history[0][y][x] = cell.to
-  }, (row, i) => game_fields_history[0][i] = [])
+  game_fields_history[app.currentGeneration] = cloneField(app.game_field)
 }
 
 function gameFieldWhile(callbackCells, callbackRows) {
@@ -112,13 +109,8 @@ function calculateCell(x, y) {
 const automatonStepsNode = document.querySelector('#automaton-steps')
 
 function calculateField() {
-  // const clonedField = []
 
-  gameFieldWhile(
-    (cell, x, y) => {
-      calculateCell(x, y)
-    }
-  )
+  gameFieldWhile((cell, x, y) => calculateCell(x, y))
 
   automatonStepsNode.innerText = ++app.generation
   updateAppStorage()
@@ -148,21 +140,25 @@ function setTimePosition(generationNum) {
   }
 
   if(game_fields_history[generationNum]) {
+    app.currentGeneration = generationNum
+    currentGenerationNode.innerText = app.currentGeneration
+
     setField(game_fields_history[generationNum])
   }
   else if(generationNum === game_fields_history.length) {
+
+
     setTimePosition(game_fields_history.length - 1)
     calculateField()
+
+    app.currentGeneration = generationNum
+    currentGenerationNode.innerText = app.currentGeneration
+
+    render()
   }
   else if(generationNum > game_fields_history.length) {
     console.warn('can\'t set not calculated game field')
-    return
   }
-
-  app.currentGeneration = generationNum
-  currentGenerationNode.innerText = app.currentGeneration
-
-  render()
 }
 
 function moveTimeBackward() {
@@ -197,6 +193,7 @@ function render() {
   })
 
   updateAppStorage()
+  game_fields_history[app.currentGeneration] = cloneField(app.game_field)
 }
 
 // TOOLS
@@ -254,7 +251,11 @@ cnvs.addEventListener('pointerdown', event => {
   isPointerDown = true
   makeDrawing(event)
 })
-cnvs.addEventListener('pointerup', () => isPointerDown = false)
+cnvs.addEventListener('pointerup', () => {
+  isPointerDown = false
+
+  render()
+})
 cnvs.addEventListener('pointermove', makeDrawing)
 
 // TIME MANIPULATING
