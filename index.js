@@ -40,8 +40,11 @@ else cellTypes = JSON.parse(localStorage.getItem('cellTypes'))
 if(localStorage.getItem('app') === null) {
 
   app = {
-    isPlayed: true,
+    // isPlayed: true,
+    isPlayed: false,
+    animationDirection: 1,
     generation: 0,
+    currentGeneration: 0,
     fps: 60,
     game_field: null
   }

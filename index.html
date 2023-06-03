@@ -125,10 +125,24 @@
   <div class="tools-window tools-window--left-window tools-window--left-window--closed">
     <div class="tools-window__item">
 
-      <div class="buttons-line tools-window__buttons-line">
-        <button id="pause-automaton" class="buttons-line__button">Пауза</button>
-        <button id="animate-automaton" class="buttons-line__button">Анімація</button>
-        <button id="next-step-automaton" class="buttons-line__button">Наступний крок</button>
+      <div class="buttons-container tools-window__buttons-container">
+        <div class="buttons-container__line">       
+          <button id="back-step-automaton" class="buttons-container__button" onclick="moveTimeBackward()">Попередній крок</button>
+          <button id="next-step-automaton" class="buttons-container__button" onclick="moveTimeForward()">Наступний крок</button>
+        </div>
+        <div class="buttons-container__line">
+          <button id="pause-automaton" class="buttons-container__button" onclick="pauseAnimation()">Пауза</button>
+          <button id="animate-automaton" class="buttons-container__button" onclick="makeAnimation()">Анімація</button>
+          <button id="animation-direction-backward" class="buttons-container__button" onclick="setAnimationDirection(-1)">←</button>
+          <button id="animation-direction-forward" class="buttons-container__button" onclick="setAnimationDirection(1)">→</button>
+        </div>
+        <div class="buttons-container__line buttons-container__set-generation-container">
+          <form id="set-generation-form">
+            <label for="set-generation-input">Вказати крок: </label>
+            <input type="number" id="set-generation-input" placeholder="0" required min="0">
+            <button type="submit">виконати</button>
+          </form>
+        </div>
       </div>
 
       <div class="input-field">
@@ -137,6 +151,7 @@
       </div>
 
       <p class="tools-window__text">Кроків виконано: <span id="automaton-steps">0</span></p>
+      <p class="tools-window__text">Поточний крок: <span id="automaton-current-step">0</span></p>
 
       <div class="tools-window-button tools-window__button" onclick="toogleWindow('.tools-window--left-window')">
         <svg class="tools-window-button__symbol" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M21 12l-18 12v-24z"/></svg>
@@ -177,7 +192,7 @@
   <script>
     // init
 
-    if(app.isPlayed) makeInterval()
+    if(app.isPlayed) makeAnimation()
   </script>
 
 </body>

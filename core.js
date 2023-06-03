@@ -1,3 +1,5 @@
+let isReseting = false
+
 function randomBetween(min, max) {
   return Math.random() * (max - min) + min
 }
@@ -25,6 +27,8 @@ function openPopup(id) {
 function resetProject() {
   const answer = confirm('Ви точно хочете очистити проет?')
   if(answer) {
+    isReseting = true
+
     localStorage.removeItem('app')
     localStorage.removeItem('cellTypes')
     localStorage.removeItem('game_fields_history')

@@ -29,6 +29,11 @@ if(app.game_field === null) {
   }
 
   randomFillCells(1, .5)
+
+  game_fields_history[0] = []
+  gameFieldWhile((cell, x, y) => {
+    game_fields_history[0][y][x] = cell.to
+  }, (row, i) => game_fields_history[0][i] = [])
 }
 
 function gameFieldWhile(callbackCells, callbackRows) {
@@ -36,6 +41,21 @@ function gameFieldWhile(callbackCells, callbackRows) {
     if(callbackRows) callbackRows(app.game_field[i], i, app.game_field)
     for(let j = 0; j < cells_res; j++) callbackCells(app.game_field[i][j], j, i, app.game_field)
   }
+}
+
+function cloneField(fieldImage) {
+  const clonedField = []
+
+  fieldImage.forEach((row, i) => {
+    clonedField[i] = []
+
+    row.forEach((cell, j) => {
+      if(cell.to !== undefined) clonedField[i][j] = cell.to
+      else clonedField[i][j] = cell
+    })
+  })
+
+  return clonedField
 }
 
 // CALCULATION
@@ -92,25 +112,67 @@ function calculateCell(x, y) {
 const automatonStepsNode = document.querySelector('#automaton-steps')
 
 function calculateField() {
-  const clonedFiled = []
+  // const clonedField = []
 
   gameFieldWhile(
     (cell, x, y) => {
       calculateCell(x, y)
-
-      clonedFiled[y][x] = cell.from
     }
-    ,(row, i) => clonedFiled[i] = []
   )
 
   automatonStepsNode.innerText = ++app.generation
   updateAppStorage()
 
-  game_fields_history[app.generation] = clonedFiled
+  game_fields_history[app.generation] = cloneField(app.game_field)
 }
 
 function setField(fieldImgae) {
-  
+  if(!fieldImgae) {
+    console.warn('fieldImage not found')
+    return
+  }
+  gameFieldWhile((cell, x, y) => {
+    const value = fieldImgae[y][x]
+    setCell(x, y, value, value)
+  })
+
+  render()
+}
+
+const currentGenerationNode = document.querySelector('#automaton-current-step')
+
+function setTimePosition(generationNum) {
+  if(generationNum < 0) {
+    console.warn('generation less then 0')
+    return
+  }
+
+  if(game_fields_history[generationNum]) {
+    setField(game_fields_history[generationNum])
+  }
+  else if(generationNum === game_fields_history.length) {
+    setTimePosition(game_fields_history.length - 1)
+    calculateField()
+  }
+  else if(generationNum > game_fields_history.length) {
+    console.warn('can\'t set not calculated game field')
+    return
+  }
+
+  app.currentGeneration = generationNum
+  currentGenerationNode.innerText = app.currentGeneration
+
+  render()
+}
+
+function moveTimeBackward() {
+  if(app.currentGeneration > 0) {
+    setTimePosition(--app.currentGeneration)
+  }
+}
+
+function moveTimeForward() {
+  setTimePosition(++app.currentGeneration)
 }
 
 // RENDER
@@ -161,10 +223,10 @@ function fillField(cellTypeIndex) {
   render()
 }
 
-function frame() {
-  calculateField()
-  render()
-}
+// function frame() {
+//   calculateField()
+//   render()
+// }
 
 // PAINTING
 
@@ -199,38 +261,99 @@ cnvs.addEventListener('pointermove', makeDrawing)
 
 let interval = null
 
-const pauseNode = document.querySelector('#pause-automaton'),
-      animateNode = document.querySelector('#animate-automaton'),
-      nextStepNode = document.querySelector('#next-step-automaton'),
-      framerateInput = document.querySelector('#automaton-framerate')
+const framerateInput = document.querySelector('#automaton-framerate'),
+      animDirBtn_backward = document.querySelector('#animation-direction-backward'),
+      animDirBtn_forward = document.querySelector('#animation-direction-forward'),
+      setGenerationForm = document.querySelector('#set-generation-form')
 
-function makeInterval() {
+function makeAnimation() {
   clearInterval(interval)
   interval = setInterval(() => {
-    frame()
+    if(app.animationDirection === 1) moveTimeForward()
+    else if(app.animationDirection === -1) moveTimeBackward()
 
     FPSTOOL.checkFPS()
-  }, 1000 / framerateInput.value)
+  }, 1000 / app.fps)
 
   app.isPlayed = true
   updateAppStorage()
 }
 
-nextStepNode.addEventListener('click', frame)
-animateNode.addEventListener('click', makeInterval)
-pauseNode.addEventListener('click', () => {
+function makeAnimationFromToFixed(fromGeneration, toGeneration) {
+  if(fromGeneration < 0 || toGeneration < 0 || fromGeneration === toGeneration) {
+    console.warn('wrong input')
+    return
+  }
+
+  setTimePosition(fromGeneration)
+
+  const direction = fromGeneration - toGeneration > 0 ? -1 : 1
+
+  setAnimationDirection(direction)
+
+  const fixedAnimInterval = setInterval(() => {
+
+    if(
+      (direction === 1 && app.currentGeneration >= toGeneration) ||
+      (direction === -1 && app.currentGeneration <= toGeneration)
+    ) {
+      clearInterval(fixedAnimInterval)
+      return
+    }
+
+    if(direction === 1) moveTimeForward()
+    else if(direction === -1) moveTimeBackward()
+
+    FPSTOOL.checkFPS()
+  }, 1000 / app.fps)
+}
+
+function pauseAnimation() {
   clearInterval(interval)
   interval = null
   app.isPlayed = false
 
   updateAppStorage()
-})
+}
+
+const activeAnimDirBtnClass = 'buttons-container__button--active'
+
+function setAnimationDirection(direction) {
+  if(direction === -1) {
+    app.animationDirection = -1
+    animDirBtn_backward?.classList.add(activeAnimDirBtnClass)
+    animDirBtn_forward?.classList.remove(activeAnimDirBtnClass)
+  }
+  else if(direction === 1) {
+    app.animationDirection = 1
+    animDirBtn_backward?.classList.remove(activeAnimDirBtnClass)
+    animDirBtn_forward?.classList.add(activeAnimDirBtnClass)
+  }
+  else {
+    console.warn('invalid animation direction')
+    return
+  }
+
+  updateAppStorage()
+}
+
 framerateInput.addEventListener('input', () => {
   if(1 <= +framerateInput.value && +framerateInput.value <= 1000) {
     app.fps = +framerateInput.value
     updateAppStorage()
 
-    if(app.isPlayed) makeInterval()
+    if(app.isPlayed) makeAnimation()
+  }
+})
+
+setGenerationForm.addEventListener('submit', event => {
+  event.preventDefault()
+
+  const generationNum = +setGenerationForm.querySelector('#set-generation-input').value
+
+  if(game_fields_history[generationNum] || generationNum === game_fields_history.length) setTimePosition(generationNum)
+  else if(generationNum > game_fields_history.length) {
+    makeAnimationFromToFixed(game_fields_history.length-1, generationNum)
   }
 })
 
@@ -239,8 +362,11 @@ framerateInput.addEventListener('input', () => {
 render()
 framerateInput.value = app.fps
 automatonStepsNode.innerText = app.generation
+currentGenerationNode.innerText = app.currentGeneration
+
+setAnimationDirection(app.animationDirection)
 
 
-
-
-window.addEventListener('beforeunload', updateGameFieldsStorage)
+window.addEventListener('beforeunload', () => {
+  if(isReseting === false) updateGameFieldsStorage()
+})

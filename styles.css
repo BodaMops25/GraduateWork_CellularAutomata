@@ -242,12 +242,29 @@ canvas {
   transform: rotate(0);
 }
 
-.tools-window__buttons-line {
+.tools-window__buttons-container {
   margin-bottom: 10px;
 }
 
 .tools-window__text {
   margin-top: 8px;
+}
+
+.buttons-container__line {
+  margin-bottom: 5px;
+}
+
+.buttons-container__button--active {
+  /* border-width: 3px; */
+  background-color: #fff;
+  border-radius: 3px;
+}
+.buttons-container__button--active:hover {
+  background-color: #f7f7f7;
+}
+
+.buttons-container__set-generation-container #set-generation-input {
+  width: 60px;
 }
 
 /* CELL TYPES INTERFACE */
