@@ -171,6 +171,14 @@ function moveTimeForward() {
   setTimePosition(++app.currentGeneration)
 }
 
+function isFieldModifying() {
+  game_fields_history.splice(app.currentGeneration)
+  game_fields_history[app.currentGeneration] = cloneField(app.game_field)
+
+  app.generation = game_fields_history.length - 1
+  automatonStepsNode.innerText = app.generation
+}
+
 // RENDER
 
 function drawCell(x, y, size, color) {
@@ -203,6 +211,7 @@ function randomFillCells(cellTypeIndex, density) {
     setCell(Math.round(randomBetween(0, cells_res - 1)), Math.round(randomBetween(0, cells_res - 1)), cellTypeIndex, cellTypeIndex)
   }
   render()
+  isFieldModifying()
 }
 
 function clearField() {
@@ -211,6 +220,7 @@ function clearField() {
     setCell(x, y, cellTypeIndex, cellTypeIndex)
   })
   render()
+  isFieldModifying()
 }
 
 function fillField(cellTypeIndex) {
@@ -218,6 +228,7 @@ function fillField(cellTypeIndex) {
     setCell(x, y, cellTypeIndex, cellTypeIndex)
   })
   render()
+  isFieldModifying()
 }
 
 // function frame() {
@@ -255,6 +266,7 @@ cnvs.addEventListener('pointerup', () => {
   isPointerDown = false
 
   render()
+  isFieldModifying()
 })
 cnvs.addEventListener('pointermove', makeDrawing)
 
