@@ -176,7 +176,12 @@ function isFieldModifying() {
   game_fields_history[app.currentGeneration] = cloneField(app.game_field)
 
   app.generation = game_fields_history.length - 1
-  automatonStepsNode.innerText = app.generation
+  try {
+    automatonStepsNode.innerText = app.generation
+  }
+  catch(err) {
+    console.warn(err)
+  }
 }
 
 // RENDER

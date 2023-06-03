@@ -78,6 +78,11 @@ canvas {
   position: relative;
 }
 
+.popup__content {
+  height: 100%;
+  overflow-y: auto;
+}
+
 .popup__close-button {
   width: 40px;
   height: 40px;
@@ -246,8 +251,14 @@ canvas {
   margin-bottom: 10px;
 }
 
+
+.tools-window__text-container {
+  margin-top: 10px;
+}
+
 .tools-window__text {
-  margin-top: 8px;
+  margin-top: 0;
+  margin-bottom: 2px;
 }
 
 .buttons-container__line {
