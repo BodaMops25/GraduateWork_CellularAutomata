@@ -15,7 +15,8 @@ cnvs.style.height = cnvsPageSize + 'px'
 // GAME SETUP
 
 const cells_res = 50,
-      cells_size = cnvs_res / cells_res + 1
+      cells_size = cnvs_res / cells_res + 1,
+      cell_highlightColor = 'rgba(0, 100, 255, .4)' 
 
       const cnvsCllStp = cnvs_res / cells_res, // cell space size in pixels
       cntrStpCll = (cnvsCllStp - cells_size) / 2 // indent from cell space for center cell
@@ -37,6 +38,37 @@ function gameFieldWhile(callbackCells, callbackRows) {
   for(let i = 0; i < cells_res; i++) {
     if(callbackRows) callbackRows(app.game_field[i], i, app.game_field)
     for(let j = 0; j < cells_res; j++) callbackCells(app.game_field[i][j], j, i, app.game_field)
+  }
+}
+
+function fieldAreaWhile(fieldImage, [fromX, fromY], [toX, toY], cellsCallback, rowsCallback) {
+  try {
+    
+    const xDirection = toX - fromX < 0 ? false : true, // true === from left to right, false === reversed
+          yDirection = toY - fromY < 0 ? false : true
+
+    // for(let i = yDirection ? 0 : fromY - toY; yDirection ? i + fromY <= toY : i >= 0; yDirection ? i++ : i--) {
+    //   const fieldY = yDirection ? fromY + i : fromY - i
+
+      // if(!fieldImage[fieldY]) throw new Error('Bad input, fieldImage haven\'t y in the range')
+      // copyedArea[i] = []
+
+    //   for(let j = xDirection ? 0 : fromX - toX; xDirection? j + fromX <= toX : j >= 0; xDirection? j++ : j--) {
+    //     const fieldX = xDirection ? fromX + j : fromX - j
+    //     if(!fieldImage[fieldY][fieldX]) throw new Error('Bad input, fieldImage haven\'t x in the range')
+    //     copyedArea[i][j] = fieldImage[fieldY][fieldX]
+    //   }
+    // }
+
+    for(let i = fromY; yDirection ? fromY < toY : fromY > toY; yDirection ? i++ : i--) {
+      if(!fieldImage[i]) throw new Error('Bad input, fieldImage haven\'t y in the range')
+      rowsCallback(fieldImage[i], i, yDirection ? i - fromY : i - toY, fieldImage)
+
+      
+    }
+  }
+  catch(err) {
+    console.warn('Failed to process function:', err)
   }
 }
 
@@ -250,6 +282,7 @@ let isPainting = false,
 paintToolNode.addEventListener('click', () => {
   paintToolNode.classList.toggle('tools-window--top-window__tool-icon--active')
   isPainting = !isPainting
+  if(isPainting) toggleWindow(nodes.windowSelectors.top)
 })
 
 function makeDrawing(event) {
@@ -274,6 +307,42 @@ cnvs.addEventListener('pointerup', () => {
   isFieldModifying()
 })
 cnvs.addEventListener('pointermove', makeDrawing)
+
+
+// COPY PART OF FIELD
+
+function copyArea(fieldImage, fromX, fromY, toX, toY) {
+  try {
+    
+    const copyedArea = [],
+          xDirection = toX - fromX < 0 ? false : true, // true === from left to right, false === reversed
+          yDirection = toY - fromY < 0 ? false : true
+
+    for(let i = yDirection ? 0 : fromY - toY; yDirection ? i + fromY <= toY : i >= 0; yDirection ? i++ : i--) {
+      const fieldY = yDirection ? fromY + i : fromY - i
+
+      if(!fieldImage[fieldY]) throw new Error('Bad input, fieldImage haven\'t y in the range')
+      copyedArea[i] = []
+
+      for(let j = xDirection ? 0 : fromX - toX; xDirection? j + fromX <= toX : j >= 0; xDirection? j++ : j--) {
+        const fieldX = xDirection ? fromX + j : fromX - j
+        if(!fieldImage[fieldY][fieldX]) throw new Error('Bad input, fieldImage haven\'t x in the range')
+        copyedArea[i][j] = fieldImage[fieldY][fieldX]
+      }
+    }
+
+    return copyedArea
+  }
+  catch(err) {
+    console.warn('Failed to process function:', err)
+  }
+}
+
+function highlightArea(fromX, toX) {
+  // const cellType = getCell(x, y).to,
+  //       color = cellTypes[cellType].color
+  drawCell(x, y, cells_size, cell_highlightColor)
+}
 
 // TIME MANIPULATING
 

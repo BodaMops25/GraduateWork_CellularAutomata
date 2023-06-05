@@ -63,7 +63,7 @@
       
     </div>
     
-    <div class="tools-window-button tools-window__button" onclick="toogleWindow('.tools-window--top-window')">
+    <div class="tools-window-button tools-window__button" onclick="toggleWindow(nodes.windowSelectors.top)">
       <svg class="tools-window-button__symbol" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M21 12l-18 12v-24z"/></svg>
     </div>
   </div>
@@ -125,7 +125,7 @@
 
     </div>
 
-    <div class="tools-window-button tools-window__button" onclick="toogleWindow('.tools-window--right-window')">
+    <div class="tools-window-button tools-window__button" onclick="toggleWindow(nodes.windowSelectors.right)">
       <svg class="tools-window-button__symbol" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M21 12l-18 12v-24z"/></svg>
     </div>
   </div>
@@ -163,7 +163,7 @@
         <p class="tools-window__text">Поточний крок: <span id="automaton-current-step">0</span></p>
       </div>
 
-      <div class="tools-window-button tools-window__button" onclick="toogleWindow('.tools-window--left-window')">
+      <div class="tools-window-button tools-window__button" onclick="toggleWindow(nodes.windowSelectors.left)">
         <svg class="tools-window-button__symbol" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M21 12l-18 12v-24z"/></svg>
       </div>
     </div>
@@ -180,7 +180,7 @@
       document.querySelector('.' + nodeClass).classList.remove(nodeClass + '--closed')
     })
 
-    function toogleWindow(selector) {
+    function toggleWindow(selector) {
       const nodeClass = selector.replace('.', ''),
             node = document.querySelector(selector)
       node.classList.toggle(nodeClass + '--closed')

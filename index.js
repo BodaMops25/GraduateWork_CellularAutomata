@@ -40,8 +40,7 @@ else cellTypes = JSON.parse(localStorage.getItem('cellTypes'))
 if(localStorage.getItem('app') === null) {
 
   app = {
-    // isPlayed: true,
-    isPlayed: false,
+    isPlayed: true,
     animationDirection: 1,
     generation: 0,
     currentGeneration: 0,
@@ -88,6 +87,11 @@ function getBasicCell() {
 }
 
 const nodes = {
+  windowSelectors: {
+    top: '.tools-window--top-window',
+    left: '.tools-window--left-window',
+    right: '.tools-window--right-window'
+  },
   cellTypesSelect: document.querySelector('#cell-types-select'),
   cellAddingForm: document.querySelector('.cell-types-tool__cell-adding-form'),
   cellDeleteBtn: document.querySelector('#delete-cell-type-button'),
