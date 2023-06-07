@@ -251,8 +251,14 @@ function render() {
 // TOOLS
 
 function cnvsCoordsToCells(x, y) {
-  const realCellSize = cnvs.offsetWidth / cells_res
-  return {x: Math.floor(x / realCellSize), y: Math.floor(y / realCellSize)}
+  const realCellSize = cnvs.offsetWidth / cells_res,
+        coords = {x: Math.floor(x / realCellSize), y: Math.floor(y / realCellSize)}
+
+  if(0 <= coords.x && coords.x < cells_res && 0 <= coords.y && coords.y < cells_res) return coords
+  else {
+    console.warn('Coords out of field')
+    return {x: null, y: null}
+  }
 }
 
 function randomFillCells(cellTypeIndex, density) {
@@ -294,7 +300,8 @@ let isPointerDown = false,
 
 const activableTools = {
   paint: '#painting-tool',
-  copyArea: '#copy-area-tool'
+  copyArea: '#copy-area-tool',
+  pasteArea: '#paste-area-tool'
 }
 
 for(const key in activableTools) {
@@ -315,6 +322,8 @@ for(const key in activableTools) {
     else {
       activeTool = null
     }
+
+    render()
   })
 }
 
@@ -331,9 +340,11 @@ const pointerDownCoords = {
 }
 
 cnvs.addEventListener('pointerdown', event => {
-  isPointerDown = true
-
   const {x, y} = cnvsCoordsToCells(event.offsetX, event.offsetY)
+
+  if(x === null || y === null) return
+  
+  isPointerDown = true
 
   pointerDownCoords.x = x
   pointerDownCoords.y = y
@@ -348,9 +359,13 @@ cnvs.addEventListener('pointerdown', event => {
   }
 })
 cnvs.addEventListener('pointerup', event => {
-  isPointerDown = false
 
   const {x, y} = cnvsCoordsToCells(event.offsetX, event.offsetY)
+  
+  if(x === null || y === null) return
+
+  isPointerDown = false
+
 
   switch(activeTool) {
     case 'copyArea':
@@ -366,8 +381,13 @@ cnvs.addEventListener('pointerup', event => {
 })
 cnvs.addEventListener('pointermove', event => {
 
+  const {x, y} = cnvsCoordsToCells(event.offsetX, event.offsetY)
+
+  if(x === null || y === null) return
+
+  if(activeTool === 'pasteArea' && app.field_area_buffer) fieldAreaHologramOnGameField(app.field_area_buffer, x, y)
+
   if(isPointerDown) {
-    const {x, y} = cnvsCoordsToCells(event.offsetX, event.offsetY)
 
     switch(activeTool) {
       case 'paint':
@@ -380,6 +400,27 @@ cnvs.addEventListener('pointermove', event => {
   }
 })
 
+cnvs.addEventListener('click', event => {
+
+  const {x, y} = cnvsCoordsToCells(event.offsetX, event.offsetY)
+  if(x === null || y === null) return
+
+  if(activeTool === 'pasteArea') {
+    
+    const areaHeight = app.field_area_buffer.length,
+          areaWidth = app.field_area_buffer[0].length
+
+    fieldAreaWhile(app.game_field, x, y, x + areaWidth - 1, y + areaHeight - 1, ({x, y, absoluteX, absoluteY}) => {
+      
+      let cell = app.field_area_buffer[absoluteY][absoluteX]
+      cell = cell.to === undefined ? cell : cell.to
+
+      setCell(x, y, cell, cell)
+    })
+
+    render()
+  }
+})
 
 // COPY PART OF FIELD
 
@@ -399,6 +440,25 @@ function highlightFiedlArea(fromX, fromY, toX, toY) {
   render()
   fieldAreaWhile(app.game_field, fromX, fromY, toX, toY, ({x, y}) => {
     drawCell(x, y, cells_size, cell_highlightColor)
+  })
+}
+
+// PASTE PART OF FIELD
+
+function fieldAreaHologramOnGameField(fieldArea, fieldX, fieldY) {
+  const areaHeight = fieldArea.length,
+        areaWidth = fieldArea[0].length
+
+  render()
+
+  fieldAreaWhile(app.game_field, fieldX, fieldY, fieldX + areaWidth - 1, fieldY + areaHeight - 1, ({x, y, absoluteX, absoluteY}) => {
+    
+    let cell = fieldArea[absoluteY][absoluteX]
+    cell = cell.to === undefined ? cell : cell.to
+
+    const color = cellTypes[cell].color
+
+    drawCell(x, y, cells_size, hexToRGBA(color, .7))
   })
 }
 

@@ -1,5 +1,20 @@
 let isReseting = false
 
+function hexToRGBA(hex, alpha = 1) {
+  hex = hex.replace('#', '')
+  const shorthandRegex = /^([a-f\d])([a-f\d])([a-f\d])$/i
+  hex = hex.replace(shorthandRegex, (m, r, g, b) => r + r + g + g + b + b)
+
+  const bigint = parseInt(hex, 16)
+  const r = (bigint >> 16) & 255
+  const g = (bigint >> 8) & 255
+  const b = bigint & 255
+
+  const rgba = `rgba(${r}, ${g}, ${b}, ${alpha})`
+
+  return rgba
+}
+
 function randomBetween(min, max) {
   return Math.random() * (max - min) + min
 }
