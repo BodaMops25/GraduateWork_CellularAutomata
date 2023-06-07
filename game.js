@@ -41,30 +41,37 @@ function gameFieldWhile(callbackCells, callbackRows) {
   }
 }
 
-function fieldAreaWhile(fieldImage, [fromX, fromY], [toX, toY], cellsCallback, rowsCallback) {
+function fieldAreaWhile(fieldImage, fromX, fromY, toX, toY, cellsCallback, rowsCallback) {
   try {
+
+    if(toX === undefined) toX = fromX
+    if(toY === undefined) toY = fromY
     
     const xDirection = toX - fromX < 0 ? false : true, // true === from left to right, false === reversed
           yDirection = toY - fromY < 0 ? false : true
 
-    // for(let i = yDirection ? 0 : fromY - toY; yDirection ? i + fromY <= toY : i >= 0; yDirection ? i++ : i--) {
-    //   const fieldY = yDirection ? fromY + i : fromY - i
-
-      // if(!fieldImage[fieldY]) throw new Error('Bad input, fieldImage haven\'t y in the range')
-      // copyedArea[i] = []
-
-    //   for(let j = xDirection ? 0 : fromX - toX; xDirection? j + fromX <= toX : j >= 0; xDirection? j++ : j--) {
-    //     const fieldX = xDirection ? fromX + j : fromX - j
-    //     if(!fieldImage[fieldY][fieldX]) throw new Error('Bad input, fieldImage haven\'t x in the range')
-    //     copyedArea[i][j] = fieldImage[fieldY][fieldX]
-    //   }
-    // }
-
-    for(let i = fromY; yDirection ? fromY < toY : fromY > toY; yDirection ? i++ : i--) {
+    for(let i = fromY; yDirection ? i <= toY : i >= toY; yDirection ? i++ : i--) {
       if(!fieldImage[i]) throw new Error('Bad input, fieldImage haven\'t y in the range')
-      rowsCallback(fieldImage[i], i, yDirection ? i - fromY : i - toY, fieldImage)
 
-      
+      const absoluteY = yDirection ? i - fromY : i - toY
+
+      if(rowsCallback) rowsCallback({
+        row: fieldImage[i],
+        y: i,
+        absoluteY: absoluteY,
+        field: fieldImage
+      })
+
+      for(let j = fromX; xDirection ? j <= toX : j >= toX; xDirection ? j++ : j--) {
+        if(cellsCallback) cellsCallback({
+          cell: fieldImage[i][j],
+          x: j,
+          y: i,
+          absoluteX: xDirection ? j - fromX : j - toX,
+          absoluteY: absoluteY,
+          field: fieldImage
+        })
+      }
     }
   }
   catch(err) {
@@ -243,6 +250,11 @@ function render() {
 
 // TOOLS
 
+function cnvsCoordsToCells(x, y) {
+  const realCellSize = cnvs.offsetWidth / cells_res
+  return {x: Math.floor(x / realCellSize), y: Math.floor(y / realCellSize)}
+}
+
 function randomFillCells(cellTypeIndex, density) {
   for(let i = 0; i < cells_res**2 * density; i++) {
     setCell(Math.round(randomBetween(0, cells_res - 1)), Math.round(randomBetween(0, cells_res - 1)), cellTypeIndex, cellTypeIndex)
@@ -273,75 +285,121 @@ function fillField(cellTypeIndex) {
 //   render()
 // }
 
+const activeToolClass = 'tools-window--top-window__tool-icon--active'
+
+let isPointerDown = false,
+    activeTool = null
+
 // PAINTING
 
-const paintToolNode = document.querySelector('#painting-tool')
-let isPainting = false,
-    isPointerDown = false
+const activableTools = {
+  paint: '#painting-tool',
+  copyArea: '#copy-area-tool'
+}
 
-paintToolNode.addEventListener('click', () => {
-  paintToolNode.classList.toggle('tools-window--top-window__tool-icon--active')
-  isPainting = !isPainting
-  if(isPainting) toggleWindow(nodes.windowSelectors.top)
-})
+for(const key in activableTools) {
+  const selector = activableTools[key]
 
-function makeDrawing(event) {
-  if(isPainting && isPointerDown) {
-    const realCellSize = cnvs.offsetWidth / cells_res,
-          fieldX = Math.floor(event.offsetX / realCellSize),
-          fieldY = Math.floor(event.offsetY / realCellSize)
+  activableTools[key] = document.querySelector(selector)
+  
+  const node = activableTools[key]
 
-    setCell(fieldX, fieldY, getCurrentCellIndex(), getCurrentCellIndex())
-    drawCell(fieldX, fieldY, cells_size, cellTypes[getCurrentCellIndex()].color)
-  }
+  node.addEventListener('click', () => {
+    if(activeTool !== null && activableTools[activeTool] !== node) activableTools[activeTool].classList.remove(activeToolClass)
+    node.classList.toggle(activeToolClass)
+
+    if(node.classList.contains(activeToolClass)) {
+      activeTool = key
+      toggleWindow(nodes.windowSelectors.top)
+    }
+    else {
+      activeTool = null
+    }
+  })
+}
+
+function makeDrawing(x, y) {
+  setCell(x, y, getCurrentCellIndex(), getCurrentCellIndex())
+  drawCell(x, y, cells_size, cellTypes[getCurrentCellIndex()].color)
+}
+
+// POINTER EVENTS
+
+const pointerDownCoords = {
+  x: null,
+  y: null
 }
 
 cnvs.addEventListener('pointerdown', event => {
   isPointerDown = true
-  makeDrawing(event)
+
+  const {x, y} = cnvsCoordsToCells(event.offsetX, event.offsetY)
+
+  pointerDownCoords.x = x
+  pointerDownCoords.y = y
+
+  switch(activeTool) {
+    case 'paint':
+      makeDrawing(x, y);
+      break;
+    case 'copyArea':
+      highlightFiedlArea(x, y);
+      break;
+  }
 })
-cnvs.addEventListener('pointerup', () => {
+cnvs.addEventListener('pointerup', event => {
   isPointerDown = false
+
+  const {x, y} = cnvsCoordsToCells(event.offsetX, event.offsetY)
+
+  switch(activeTool) {
+    case 'copyArea':
+      app.field_area_buffer = copyFieldArea(app.game_field, pointerDownCoords.x, pointerDownCoords.y, x, y)
+      updateAppStorage()
+      activableTools.copyArea.dispatchEvent(new Event('click'))
+      toggleWindow(nodes.windowSelectors.top)
+      break;
+  }
 
   render()
   isFieldModifying()
 })
-cnvs.addEventListener('pointermove', makeDrawing)
+cnvs.addEventListener('pointermove', event => {
+
+  if(isPointerDown) {
+    const {x, y} = cnvsCoordsToCells(event.offsetX, event.offsetY)
+
+    switch(activeTool) {
+      case 'paint':
+        makeDrawing(x, y);
+        break;
+      case 'copyArea':
+        highlightFiedlArea(pointerDownCoords.x, pointerDownCoords.y, x, y);
+        break;
+    }
+  }
+})
 
 
 // COPY PART OF FIELD
 
-function copyArea(fieldImage, fromX, fromY, toX, toY) {
-  try {
-    
-    const copyedArea = [],
-          xDirection = toX - fromX < 0 ? false : true, // true === from left to right, false === reversed
-          yDirection = toY - fromY < 0 ? false : true
+function copyFieldArea(fieldImage, fromX, fromY, toX, toY) {
 
-    for(let i = yDirection ? 0 : fromY - toY; yDirection ? i + fromY <= toY : i >= 0; yDirection ? i++ : i--) {
-      const fieldY = yDirection ? fromY + i : fromY - i
+  const copyedArea = []
 
-      if(!fieldImage[fieldY]) throw new Error('Bad input, fieldImage haven\'t y in the range')
-      copyedArea[i] = []
+  fieldAreaWhile(fieldImage, fromX, fromY, toX, toY, ({cell, absoluteY, absoluteX}) => {
+    copyedArea[absoluteY][absoluteX] = cell.to === undefined ? cell : cell.to
+  }, ({absoluteY}) => copyedArea[absoluteY] = [])
 
-      for(let j = xDirection ? 0 : fromX - toX; xDirection? j + fromX <= toX : j >= 0; xDirection? j++ : j--) {
-        const fieldX = xDirection ? fromX + j : fromX - j
-        if(!fieldImage[fieldY][fieldX]) throw new Error('Bad input, fieldImage haven\'t x in the range')
-        copyedArea[i][j] = fieldImage[fieldY][fieldX]
-      }
-    }
-
-    return copyedArea
-  }
-  catch(err) {
-    console.warn('Failed to process function:', err)
-  }
+  return copyedArea
 }
 
-function highlightArea(fromX, toX) {
-  // const cellType = getCell(x, y).to,
-  //       color = cellTypes[cellType].color
-  drawCell(x, y, cells_size, cell_highlightColor)
+function highlightFiedlArea(fromX, fromY, toX, toY) {
+
+  render()
+  fieldAreaWhile(app.game_field, fromX, fromY, toX, toY, ({x, y}) => {
+    drawCell(x, y, cells_size, cell_highlightColor)
+  })
 }
 
 // TIME MANIPULATING

@@ -45,7 +45,8 @@ if(localStorage.getItem('app') === null) {
     generation: 0,
     currentGeneration: 0,
     fps: 60,
-    game_field: null
+    game_field: null,
+    field_area_buffer: null
   }
 
   updateAppStorage()

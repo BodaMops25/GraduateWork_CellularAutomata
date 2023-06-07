@@ -1,0 +1,14 @@
+<svg width="976" height="1066" viewBox="0 0 976 1066" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect x="488" y="30" width="229" height="229" fill="black" stroke="white" stroke-width="60"/>
+<rect x="30" y="30" width="229" height="229" fill="black" stroke="white" stroke-width="60"/>
+<rect x="717" y="30" width="229" height="229" fill="black" stroke="white" stroke-width="60"/>
+<rect x="717" y="488" width="229" height="229" fill="black" stroke="white" stroke-width="60"/>
+<rect x="717" y="259" width="229" height="229" fill="black" stroke="white" stroke-width="60"/>
+<rect x="488" y="488" width="229" height="229" fill="black" stroke="white" stroke-width="60"/>
+<rect x="259" y="30" width="229" height="229" fill="black" stroke="white" stroke-width="60"/>
+<rect x="259" y="488" width="229" height="229" fill="black" stroke="white" stroke-width="60"/>
+<rect x="30" y="488" width="229" height="229" fill="black" stroke="white" stroke-width="60"/>
+<rect x="30" y="259" width="229" height="229" fill="black" stroke="white" stroke-width="60"/>
+<path d="M619.4 946L491 503.8H595.4L688.4 868H706.4L799.4 503.8H903.2L774.8 946H619.4Z" fill="white"/>
+<path d="M619.4 946L580.987 957.154L589.363 986H619.4V946ZM491 503.8V463.8H437.733L452.587 514.954L491 503.8ZM595.4 503.8L634.156 493.903L626.469 463.8H595.4V503.8ZM688.4 868L649.644 877.897L657.331 908H688.4V868ZM706.4 868V908H737.469L745.156 877.897L706.4 868ZM799.4 503.8V463.8H768.331L760.644 493.903L799.4 503.8ZM903.2 503.8L941.613 514.954L956.467 463.8H903.2V503.8ZM774.8 946V986H804.837L813.213 957.154L774.8 946ZM657.813 934.846L529.413 492.646L452.587 514.954L580.987 957.154L657.813 934.846ZM491 543.8H595.4V463.8H491V543.8ZM556.644 513.697L649.644 877.897L727.156 858.103L634.156 493.903L556.644 513.697ZM688.4 908H706.4V828H688.4V908ZM745.156 877.897L838.156 513.697L760.644 493.903L667.644 858.103L745.156 877.897ZM799.4 543.8H903.2V463.8H799.4V543.8ZM864.787 492.646L736.387 934.846L813.213 957.154L941.613 514.954L864.787 492.646ZM774.8 906H619.4V986H774.8V906Z" fill="black"/>
+</svg>
