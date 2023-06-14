@@ -168,6 +168,7 @@ function deleteCellType(index) {
 
   console.log('Cell type is deleted, index:', index)
   updateCellTypesStorage()
+  location.reload()
 }
 
 function getCurrentCellIndex() {
