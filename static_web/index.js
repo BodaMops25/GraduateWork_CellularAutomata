@@ -116,14 +116,16 @@ nodes.cellAddingForm.addEventListener('submit', event => {
     return
   }
 
-  const newOption = document.createElement('option')
-  newOption.value = inputTitle
+
+
+  const cellTypeIndex = addCellType(inputTitle, inputColor),
+        newOption = document.createElement('option')
+
+  newOption.value = cellTypeIndex
   newOption.innerText = inputTitle
   nodes.cellTypesSelect.options.add(newOption)
 
   nodes.cellAddingForm.reset()
-
-  addCellType(inputTitle, inputColor)
   updateLocalStorage()
 })
 
@@ -139,11 +141,11 @@ nodes.cellDeleteBtn?.addEventListener('click', () => {
 
 function addCellType(title, color) {
 
-  cellTypes.push({
+  return cellTypes.push({
     title: title,
     color: color,
     rules: []
-  })
+  }) - 1
   console.log('New cell type:', title, color)
   updateLocalStorage()
 }
