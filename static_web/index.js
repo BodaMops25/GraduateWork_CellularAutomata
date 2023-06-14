@@ -33,7 +33,7 @@ if(localStorage.getItem('cellTypes') === null) {
     }
   ]
 
-  updateLocalStorage()
+  updateCellTypesStorage()
 }
 else cellTypes = JSON.parse(localStorage.getItem('cellTypes'))
 
@@ -53,7 +53,7 @@ if(localStorage.getItem('app') === null) {
 }
 else app = JSON.parse(localStorage.getItem('app'))
 
-function updateLocalStorage() {
+function updateCellTypesStorage() {
   localStorage.setItem('cellTypes', JSON.stringify(cellTypes))
 }
 
@@ -126,7 +126,7 @@ nodes.cellAddingForm.addEventListener('submit', event => {
   nodes.cellTypesSelect.options.add(newOption)
 
   nodes.cellAddingForm.reset()
-  updateLocalStorage()
+  updateCellTypesStorage()
 })
 
 nodes.cellDeleteBtn?.addEventListener('click', () => {
@@ -136,7 +136,7 @@ nodes.cellDeleteBtn?.addEventListener('click', () => {
   nodes.cellTypesSelect.selectedOptions[0].remove()
 
   deleteCellType(selectedIndex)
-  updateLocalStorage()
+  updateCellTypesStorage()
 })
 
 function addCellType(title, color) {
@@ -147,7 +147,7 @@ function addCellType(title, color) {
     rules: []
   }) - 1
   console.log('New cell type:', title, color)
-  updateLocalStorage()
+  updateCellTypesStorage()
 }
 
 function deleteCellType(index) {
@@ -167,7 +167,7 @@ function deleteCellType(index) {
   }
 
   console.log('Cell type is deleted:', title)
-  updateLocalStorage()
+  updateCellTypesStorage()
 }
 
 function getCurrentCellIndex() {
@@ -188,9 +188,9 @@ function getCurrentCell() {
   }
 }
 
-function cellTypesToOptions(selectedTitle) {
+function cellTypesToOptions(selectedIndex) {
   return cellTypes.reduce((htmlStr, itm, i) => {
-    return htmlStr += `<option value="${i}" ${itm.title === selectedTitle ? 'selected' : ''}>${itm.title}</option>`
+    return htmlStr += `<option value="${i}" ${i === +selectedIndex ? 'selected' : ''}>${itm.title}</option>`
   }, '')
 }
 
@@ -246,7 +246,7 @@ function createCellRuleElement(itemRule, ruleIndex) {
       delete cellNeighbors[currentType]
       itm.dataset.currentType = newType
       neighborsCountsInputs[index].dataset.currentType = newType
-      updateLocalStorage()
+      updateCellTypesStorage()
     })
   })
 
@@ -261,7 +261,7 @@ function createCellRuleElement(itemRule, ruleIndex) {
         }, [])
       }
       else console.warn('input not valid')
-      updateLocalStorage()
+      updateCellTypesStorage()
     })
   })
 
@@ -269,12 +269,12 @@ function createCellRuleElement(itemRule, ruleIndex) {
     if(probabilityInput.value < 0 || 100 < probabilityInput.value) return
 
     ruleObj.probability = +probabilityInput.value
-    updateLocalStorage()
+    updateCellTypesStorage()
   })
 
   changeCellTypeOnSelect.addEventListener('input', () => {
     ruleObj.changeCellTypeOn = +changeCellTypeOnSelect.selectedOptions[0].value
-    updateLocalStorage()
+    updateCellTypesStorage()
   })
 
   deleteRuleBtn.addEventListener('click', () => {
@@ -287,7 +287,7 @@ function createCellRuleElement(itemRule, ruleIndex) {
 
 function deleteCellRule(cell, ruleIndex) {
   cell.rules.splice(ruleIndex, 1)
-  updateLocalStorage()
+  updateCellTypesStorage()
 }
 
 function setCellRules(cellIndex) {
@@ -313,7 +313,7 @@ function setCellRules(cellIndex) {
 function makeBasicCellFunction(cellIndex) {
   delete cellTypes[getBasicCellIndex()].isBasic
   if(cellTypes[cellIndex]) cellTypes[cellIndex].isBasic = true
-  updateLocalStorage()
+  updateCellTypesStorage()
 }
 
 nodes.makeBasicCell.addEventListener('click', () => {
@@ -335,7 +335,7 @@ nodes.addRuleBtn.addEventListener('click', () => {
     probability: 1,
     changeCellTypeOn: selectedCellIndex
   })
-  updateLocalStorage()
+  updateCellTypesStorage()
 
   setCellRules(selectedCellIndex)
 })
