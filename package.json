@@ -5,7 +5,7 @@
   "main": "server.js",
   "type": "module",
   "scripts": {
-    "fetch-changes": "git pull origin && npm start",
+    "fetch-changes": "git pull origin && npm i && npm start",
     "serve": "nodemon server.js",
     "start": "node server.js"
   },
