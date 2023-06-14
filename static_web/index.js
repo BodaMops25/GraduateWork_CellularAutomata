@@ -132,7 +132,7 @@ nodes.cellAddingForm.addEventListener('submit', event => {
 nodes.cellDeleteBtn?.addEventListener('click', () => {
   if(confirm('Ви точно хочете видалити цей тип клітинок?') === false) return
 
-  const selectedIndex = +nodes.cellTypesSelect.selectedOptions[0].innerText
+  const selectedIndex = +nodes.cellTypesSelect.selectedOptions[0].value
   nodes.cellTypesSelect.selectedOptions[0].remove()
 
   deleteCellType(selectedIndex)
@@ -157,16 +157,16 @@ function deleteCellType(index) {
 
     cellTypes.splice(index, 1)
 
-    const basicType = getBasicCell()
+    const basicTypeIndex = getBasicCellIndex()
 
     gameFieldWhile(cell => {
-      if(cell.from === title) cell.from = basicType.title
-      if(cell.to === title) cell.to = basicType.title
+      if(cell.from === index) cell.from = basicTypeIndex
+      if(cell.to === index) cell.to = basicTypeIndex
     })
     render()
   }
 
-  console.log('Cell type is deleted:', title)
+  console.log('Cell type is deleted, index:', index)
   updateCellTypesStorage()
 }
 
