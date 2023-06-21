@@ -13,7 +13,7 @@
     <img src="resources/images/trash.svg" alt="trash icon">
   </button>
 
-  <div id="app-guide" class="popup popup">
+  <div id="app-guide" class="popup">
     <div class="popup__content-container">
       <div class="popup__content">
         <h3>Як користуватись додатком</h3>
@@ -41,6 +41,25 @@
         </p>
       </div>
       <div class="popup__close-button">X</div>
+    </div>
+  </div>
+
+  <div id="set-rule-neighbors" class="popup">
+    <div class="popup__content-container">
+      <div class="popup__content">
+        <h3>Встановити кількість сусідів</h3>
+        <div><input type="checkbox" id="neighbors0"><label for="neighbors0">0 Сусідів</label></div>
+        <div><input type="checkbox" id="neighbors1"><label for="neighbors1">1 Сусід</label></div>
+        <div><input type="checkbox" id="neighbors2"><label for="neighbors2">2 Сусіда</label></div>
+        <div><input type="checkbox" id="neighbors3"><label for="neighbors3">3 Сусіда</label></div>
+        <div><input type="checkbox" id="neighbors4"><label for="neighbors4">4 Сусіда</label></div>
+        <div><input type="checkbox" id="neighbors5"><label for="neighbors5">5 Сусідів</label></div>
+        <div><input type="checkbox" id="neighbors6"><label for="neighbors6">6 Сусідів</label></div>
+        <div><input type="checkbox" id="neighbors7"><label for="neighbors7">7 Сусідів</label></div>
+        <div><input type="checkbox" id="neighbors8"><label for="neighbors8">8 Сусідів</label></div>
+        <br>
+        <button id="set-rule-neighbors-save-btn">Зберегти</button>
+      </div>
     </div>
   </div>
 
@@ -161,7 +180,7 @@
         <div class="buttons-container__line buttons-container__set-generation-container">
           <form id="set-generation-form">
             <label for="set-generation-input">Вказати крок: </label>
-            <input type="number" id="set-generation-input" placeholder="0" required min="0">
+            <input type="number" id="set-generation-input" placeholder="0" required min="0" value="0">
             <button type="submit">виконати</button>
           </form>
         </div>

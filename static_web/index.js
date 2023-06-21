@@ -252,7 +252,7 @@ function createCellRuleElement(itemRule, ruleIndex) {
   })
 
   neighborsCountsInputs.forEach(itm => {
-    itm.addEventListener('input', () => {
+    function checkInput() {
       const inputIsValid = itm.value.split(', ').reduce((c, itm) => isNaN(itm) ? 0 : c, 1)
             
       if(inputIsValid) {
@@ -263,7 +263,29 @@ function createCellRuleElement(itemRule, ruleIndex) {
       }
       else console.warn('input not valid')
       updateCellTypesStorage()
+    }
+
+    itm.addEventListener('click', () => {
+      openPopup('set-rule-neighbors')
+      const popup = document.querySelector('#set-rule-neighbors'),
+            submitBtn = popup.querySelector('#set-rule-neighbors-save-btn')
+            
+            submitBtn.addEventListener('click', () => {
+              const checkedIndexes = []
+              popup.querySelectorAll('input[type="checkbox"').forEach((checkbox, i) => {
+                if(checkbox.checked) {
+                  checkedIndexes.push(i)
+                  checkbox.checked = false
+                }
+              })
+
+              itm.value = checkedIndexes.join(', ')
+              checkInput()
+              closePopup('set-rule-neighbors')
+            }, {once: 1})
     })
+
+    itm.addEventListener('input', checkInput)
   })
 
   probabilityInput.addEventListener('input', () => {
