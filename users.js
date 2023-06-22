@@ -14,7 +14,7 @@ async function writeUsers(data) {
 }
 
 async function getUser(userIdentificator) {
-  const user = (await readUsers()).find(user => user.id === userIdentificator || user.name === userIdentificator)
+  const user = (await readUsers()).find(user => user.id === +userIdentificator || user.name === userIdentificator)
 
   if(user === undefined) {
     throw new Error(USERS_CODES.USER_NOT_EXIST + ' -> user-id: ' + userIdentificator)
@@ -34,7 +34,7 @@ async function createUser(userObj) {
   const user = {
     id: +new Date(),
     name: userObj.name,
-    pass: userObj.pass,
+    pass: userObj.pass.toString(),
     projects: [],
     blueprints: []
   }
@@ -45,9 +45,9 @@ async function createUser(userObj) {
   return user
 }
 
-async function deleteUser(deleteUserId) {
+async function deleteUser(userIdentificator) {
   const users = await readUsers(),
-        userIndex = users.findIndex(user => user.id === deleteUserId)
+        userIndex = users.findIndex(user => user.id === +userIdentificator || user.name === userIdentificator)
 
   if(userIndex === -1) {
     throw new Error(USERS_CODES.USER_NOT_EXIST)
@@ -60,20 +60,33 @@ async function deleteUser(deleteUserId) {
   return true
 }
 
-async function updateUser(userId, propsObj) {
+async function updateUser(userIdentificator, propsObj) {
   const users = await readUsers(),
-        user = users.find(user => user.id === userId)
+        user = users.find(user => user.id === userIdentificator || user.name === userIdentificator)
 
   if(user === undefined) {
     throw new Error(USERS_CODES.USER_NOT_EXIST)
     return
   }
 
-  for(const key in user) {
-    if(propsObj[key] !== undefined) user[key] = propsObj[key]
+  if(userIdentificator !== propsObj.name && users.find(user => user.id === +propsObj.name || user.name === propsObj.name) !== undefined) {
+    throw new Error(USERS_CODES.NAME_BUSY)
+    return
   }
 
+  if(propsObj.name) user.name = propsObj.name
+  if(propsObj.pass) user.pass = propsObj.pass.toString()
+  if(propsObj.projects) user.projects = propsObj.projects
+  if(propsObj.blueprints) user.name = blueprintsropsObj.blueprints
+
+  await writeUsers(users)
   return user
+}
+
+async function checkAuth(userIdentificator, pass) {
+  const user = await getUser(userIdentificator)
+  if(user.pass === pass) return true
+  return false
 }
 
 // EXPRESS ROUTER FOR USERS
@@ -84,6 +97,7 @@ async function errorsWrapper(res, func) {
   }
   catch(err) {
     if(err.message.includes(USERS_CODES.USER_NOT_EXIST)) res.sendStatus(HTTP_CODES.NOT_FOUND)
+    else if(err.message.includes(USERS_CODES.NAME_BUSY)) res.status(HTTP_CODES.BAD_REQUEST).send(USERS_CODES.NAME_BUSY)
     else {
       res.sendStatus(HTTP_CODES.INTERNAL_SERVER_ERROR)
       console.log(err)
@@ -95,42 +109,73 @@ const usersRouter = Router()
 
 usersRouter.use(json()) // for parsing post body
 
-usersRouter.route('/users/user_:userId')
-  .get(async (req, res) => {
-    await errorsWrapper(res, async () => {
-
-      res.json(await getUser(+req.params.userId))
-
-    })
-  })
+usersRouter.route('/users')
   .post(async (req, res) => {
     await errorsWrapper(res, async () => {
-      try {
-        const {name, pass} = req.body
+      const {name, pass} = req.body
 
-        if(!name) res.status(HTTP_CODES.BAD_REQUEST).send('Name is invalid or empty')
-        else if(pass.length < config.pass_min_length || config.pass_max_length < pass.length) {
-          res.status(HTTP_CODES.BAD_REQUEST).send('Pass is not in ' + config.pass_min_length + '-' + config.pass_max_length + ' range length')
-        }
-        else {
-          const user = await createUser({
-            name: name,
-            pass: pass
-          })
-          res.status(HTTP_CODES.OK).send(user)
-        }
+      if(!name) res.status(HTTP_CODES.BAD_REQUEST).send('Name is invalid or empty')
+      else if(pass.length < config.pass_min_length || config.pass_max_length < pass.length) {
+        res.status(HTTP_CODES.BAD_REQUEST).send('Pass is not in ' + config.pass_min_length + '-' + config.pass_max_length + ' range length')
       }
-      catch (err) {
-        if(err.message === USERS_CODES.NAME_BUSY) res.status(HTTP_CODES.BAD_REQUEST).send(USERS_CODES.NAME_BUSY)
-        else throw err
+      else {
+        const user = await createUser({
+          name: name,
+          pass: pass
+        })
+        res.status(HTTP_CODES.OK).send(user)
       }
     })
   })
   .put(async (req, res) => {
     await errorsWrapper(res, async () => {
-      await updateUser(+req.params.userId, req.body)
-      res.json(await getUser(+req.params.userId))
+      if(!req.body || !req.body.auth || !req.body.body) {
+        res.status(HTTP_CODES.BAD_REQUEST).send('Invalud req.body or req.body.auth or req.body.body')
+        return
+      }
+
+      const {name, pass} = req.body.auth,
+            props = req.body.body
+
+      if(!await checkAuth(name, pass)) {
+        res.sendStatus(HTTP_CODES.UNAUTHORIZED)
+        return
+      }
+
+      if(props.pass) {
+        if(props.pass.length < config.pass_min_length || config.pass_max_length < props.pass.length) {
+          res.status(HTTP_CODES.BAD_REQUEST).send('Pass is not in ' + config.pass_min_length + '-' + config.pass_max_length + ' range length')
+          return
+        }
+      }
+
+      res.json(await updateUser(name, props))
+    })
+  })
+  .delete(async (req, res) => {
+    await errorsWrapper(res, async () => {
+
+      if(!req.body) {
+        res.status(HTTP_CODES.BAD_REQUEST).send('Invalud req.body')
+        return
+      }
+
+      const {name, pass} = req.body
+
+      if(!await checkAuth(name, pass)) {
+        res.sendStatus(HTTP_CODES.UNAUTHORIZED)
+        return
+      }
+
+      await deleteUser(name)
+      res.sendStatus(HTTP_CODES.OK)
     })
   })
 
-  export {getUser, createUser, deleteUser, updateUser, usersRouter}
+usersRouter.get('/users/:userId', async (req, res) => {
+  await errorsWrapper(res, async () => {
+    res.json(await getUser(req.params.userId))
+  })
+})
+
+export {getUser, createUser, deleteUser, updateUser, usersRouter}
