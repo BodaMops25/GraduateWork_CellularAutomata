@@ -13,6 +13,9 @@
   <button class="screen-button screen-button--clear-game" title="Очистити проект" onclick="resetProject()">
     <img src="resources/images/trash.svg" alt="trash icon">
   </button>
+  <button class="screen-button screen-button--exit" title="Вийти з проекту" onclick="location.href = 'account.html'">
+    <img src="resources/images/exit-60.png" alt="trash icon">
+  </button>
 
   <div id="app-guide" class="popup">
     <div class="popup__content-container">
@@ -232,47 +235,44 @@
 
   <script>
 
-    function insertScript(path) {
+    function insertScript(path, onloadCallback) {
       const script = document.createElement('script')
       script.src = path
+
+      script.addEventListener('load', onloadCallback)
 
       document.body.appendChild(script)
     }
 
     const gameTitle = new URL(location.href).searchParams.get('game')
 
-    let proj = undefined,
+    let USER = undefined,
+        PROJ = undefined,
         field_res = 0,
         field_height = 0
 
     fetch('users/' + localStorage.user_id)
       .then(res => res.json())
-      .then(USER => {
+      .then(res_user => {
 
-        proj = USER.projects.find(proj => proj.title === gameTitle)
+        USER = res_user
+        PROJ = USER.projects.find(proj => proj.title === gameTitle)
 
-        field_res = proj.resolution;
+        field_res = PROJ.resolution;
 
-        setTimeout(() => {
-          insertScript('core.js')
+        insertScript('core.js', () => {
+          insertScript('game.js', () => {
+            insertScript('game_canvas.js', () => {
 
-          setTimeout(() => {
-            insertScript('game.js')
+              // init
 
-            setTimeout(() => {
-              insertScript('game_canvas.js')
-            }, 50)
-          }, 50)
-        }, 50)
+              if(app.isPlayed) makeAnimation()
+
+            })
+          })
+        })
       })
 
   </script>
-
-  <script>
-    // init
-
-    // if(app.isPlayed) makeAnimation()
-  </script>
-
 </body>
 </html>

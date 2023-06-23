@@ -134,7 +134,7 @@ function calculateCell(x, y) {
       return obj
     }, {})
 
-    cellTypes[cell.from].rules.forEach(({cellNeighbors, probability, changeCellTypeOn}) => {
+    PROJ.cellTypes[cell.from].rules.forEach(({cellNeighbors, probability, changeCellTypeOn}) => {
       for(const key in cellNeighbors) {
         if(!neighborsCounts[key]) neighborsCounts[key] = 0
         if(cellNeighbors[key].find(itm => itm === neighborsCounts[key]) !== undefined) setCell(x, y, undefined, changeCellTypeOn)
@@ -237,7 +237,7 @@ function render() {
   ctx.clearRect(0, 0, cnvs_res, cnvs_res)
   gameFieldWhile((cell, x, y, field) => {
 
-    const cellType = cellTypes[cell.to !== null ? cell.to : cell.from]
+    const cellType = PROJ.cellTypes[cell.to !== null ? cell.to : cell.from]
     if(cellType === undefined) return
 
     drawCell(x, y, cells_size, cellType.color)
@@ -329,7 +329,7 @@ for(const key in activableTools) {
 
 function makeDrawing(x, y) {
   setCell(x, y, getCurrentCellIndex(), getCurrentCellIndex())
-  drawCell(x, y, cells_size, cellTypes[getCurrentCellIndex()].color)
+  drawCell(x, y, cells_size, PROJ.cellTypes[getCurrentCellIndex()].color)
 }
 
 // POINTER EVENTS
@@ -456,7 +456,7 @@ function fieldAreaHologramOnGameField(fieldArea, fieldX, fieldY) {
     let cell = fieldArea[absoluteY][absoluteX]
     cell = cell.to === undefined ? cell : cell.to
 
-    const color = cellTypes[cell].color
+    const color = PROJ.cellTypes[cell].color
 
     drawCell(x, y, cells_size, hexToRGBA(color, .7))
   })
@@ -570,8 +570,3 @@ automatonStepsNode.innerText = app.generation
 currentGenerationNode.innerText = app.currentGeneration
 
 setAnimationDirection(app.animationDirection)
-
-
-window.addEventListener('beforeunload', () => {
-  if(isReseting === false) updateGameFieldsStorage()
-})

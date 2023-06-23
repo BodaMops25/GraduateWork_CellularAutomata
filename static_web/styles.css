@@ -54,6 +54,10 @@ canvas {
   left: 60px;
 }
 
+.screen-button--exit {
+  left: 110px;
+}
+
 /* TOOLS WINDOW */
 
 .cell-types-tool_cell-is-basic,

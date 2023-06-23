@@ -3,12 +3,7 @@
     "id": 1687488236307,
     "name": "Boda",
     "pass": "12345678",
-    "projects": [
-      {
-        "title": "Проект 1",
-        "resolution": 100
-      }
-    ],
+    "projects": [],
     "blueprints": [],
     "creatingDate": 1687488236307
   }

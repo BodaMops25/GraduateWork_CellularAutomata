@@ -1,9 +1,17 @@
-let cellTypes = null,
-    app = null,
-    game_fields_history = JSON.parse(localStorage.getItem('game_fields_history') || '[]')
+if(!PROJ.cellTypes) PROJ.cellTypes = []
 
-if(localStorage.getItem('cellTypes') === null) {
-  cellTypes = [
+// if(!game_fields_history) game_fields_history = []
+
+// let PROJ.cellTypes = PROJ.cellTypes,
+//     app = app,
+
+let app = localStorage['app_' + USER.id + '_' + PROJ.title],
+    game_fields_history = JSON.parse(localStorage['game_fields_history_' + USER.id + '_' + PROJ.title] || '[]')
+
+if(app !== undefined) app = JSON.parse(app)
+
+if(PROJ.cellTypes.length === 0) {
+  PROJ.cellTypes = [
     {
       title: 'Чорний',
       isBasic: true,
@@ -33,11 +41,10 @@ if(localStorage.getItem('cellTypes') === null) {
     }
   ]
 
-  updateCellTypesStorage()
+  // // updatePROJ.cellTypesStorage()
 }
-else cellTypes = JSON.parse(localStorage.getItem('cellTypes'))
 
-if(localStorage.getItem('app') === null) {
+if(app === undefined) {
 
   app = {
     isPlayed: true,
@@ -51,22 +58,23 @@ if(localStorage.getItem('app') === null) {
 
   updateAppStorage()
 }
-else app = JSON.parse(localStorage.getItem('app'))
 
-function updateCellTypesStorage() {
-  localStorage.setItem('cellTypes', JSON.stringify(cellTypes))
-}
+// function // updatePROJ.cellTypesStorage() {
+//   localStorage.setItem('PROJ.cellTypes', JSON.stringify(PROJ.cellTypes))
+// }
 
 function updateAppStorage() {
-  localStorage.setItem('app', JSON.stringify(app))
+  // localStorage.setItem('app', JSON.stringify(app))
+  localStorage['app_' + USER.id + '_' + PROJ.title] = JSON.stringify(app)
 }
 
 function updateGameFieldsStorage() {
-  localStorage.setItem('game_fields_history', JSON.stringify(game_fields_history))
+  // localStorage.setItem('game_fields_history', JSON.stringify(game_fields_history))
+  localStorage['game_fields_history_' + USER.id + '_' + PROJ.title] = JSON.stringify(game_fields_history)
 }
 
 function getBasicCellIndex() {
-  const result = cellTypes.findIndex(itm => itm.isBasic)
+  const result = PROJ.cellTypes.findIndex(itm => itm.isBasic)
 
   if(result === -1) {
     console.warn('Basic cell type not found')
@@ -77,7 +85,7 @@ function getBasicCellIndex() {
 }
 
 function getBasicCell() {
-  const result = cellTypes.find(itm => itm.isBasic)
+  const result = PROJ.cellTypes.find(itm => itm.isBasic)
 
   if(result === -1) {
     console.warn('Basic cell type not found')
@@ -126,7 +134,7 @@ nodes.cellAddingForm.addEventListener('submit', event => {
   nodes.cellTypesSelect.options.add(newOption)
 
   nodes.cellAddingForm.reset()
-  updateCellTypesStorage()
+  // updatePROJ.cellTypesStorage()
 })
 
 nodes.cellDeleteBtn?.addEventListener('click', () => {
@@ -136,26 +144,26 @@ nodes.cellDeleteBtn?.addEventListener('click', () => {
   nodes.cellTypesSelect.selectedOptions[0].remove()
 
   deleteCellType(selectedIndex)
-  updateCellTypesStorage()
+  // updatePROJ.cellTypesStorage()
 })
 
 function addCellType(title, color) {
 
-  return cellTypes.push({
+  return PROJ.cellTypes.push({
     title: title,
     color: color,
     rules: []
   }) - 1
   console.log('New cell type:', title, color)
-  updateCellTypesStorage()
+  // updatePROJ.cellTypesStorage()
 }
 
 function deleteCellType(index) {
 
-  if(cellTypes[index]) {
-    if(cellTypes[index].isBasic) return
+  if(PROJ.cellTypes[index]) {
+    if(PROJ.cellTypes[index].isBasic) return
 
-    cellTypes.splice(index, 1)
+    PROJ.cellTypes.splice(index, 1)
 
     const basicTypeIndex = getBasicCellIndex()
 
@@ -167,14 +175,14 @@ function deleteCellType(index) {
   }
 
   console.log('Cell type is deleted, index:', index)
-  updateCellTypesStorage()
+  // updatePROJ.cellTypesStorage()
   location.reload()
 }
 
 function getCurrentCellIndex() {
   const index = +nodes.cellTypesSelect.selectedOptions[0].value
 
-  if(cellTypes[index]) return index
+  if(PROJ.cellTypes[index]) return index
   else {
     console.warn('Current cell type not existing')
   }
@@ -183,14 +191,14 @@ function getCurrentCellIndex() {
 function getCurrentCell() {
   const index = +nodes.cellTypesSelect.selectedOptions[0].value
 
-  if(cellTypes[index]) return cellTypes[index]
+  if(PROJ.cellTypes[index]) return PROJ.cellTypes[index]
   else {
     console.warn('Current cell type not existing')
   }
 }
 
 function cellTypesToOptions(selectedIndex) {
-  return cellTypes.reduce((htmlStr, itm, i) => {
+  return PROJ.cellTypes.reduce((htmlStr, itm, i) => {
     return htmlStr += `<option value="${i}" ${i === +selectedIndex ? 'selected' : ''}>${itm.title}</option>`
   }, '')
 }
@@ -235,7 +243,7 @@ function createCellRuleElement(itemRule, ruleIndex) {
         probabilityInput = item.querySelector('#cellRulesProbability_' + inputRandId),
         changeCellTypeOnSelect = item.querySelector('#ruleChangingType_' + inputRandId),
         deleteRuleBtn = item.querySelector('.cell-rule-item__delete-button'),
-        ruleObj = cellTypes[getCurrentCellIndex()].rules[ruleIndex]
+        ruleObj = PROJ.cellTypes[getCurrentCellIndex()].rules[ruleIndex]
 
   item.querySelectorAll('.cell-rule-item__cells-neighbors-select').forEach((itm, index) => {
     itm.addEventListener('input', () => {
@@ -247,7 +255,7 @@ function createCellRuleElement(itemRule, ruleIndex) {
       delete cellNeighbors[currentType]
       itm.dataset.currentType = newType
       neighborsCountsInputs[index].dataset.currentType = newType
-      updateCellTypesStorage()
+      // updatePROJ.cellTypesStorage()
     })
   })
 
@@ -262,7 +270,7 @@ function createCellRuleElement(itemRule, ruleIndex) {
         }, [])
       }
       else console.warn('input not valid')
-      updateCellTypesStorage()
+      // updatePROJ.cellTypesStorage()
     }
 
     itm.addEventListener('click', () => {
@@ -292,16 +300,16 @@ function createCellRuleElement(itemRule, ruleIndex) {
     if(probabilityInput.value < 0 || 100 < probabilityInput.value) return
 
     ruleObj.probability = +probabilityInput.value
-    updateCellTypesStorage()
+    // updatePROJ.cellTypesStorage()
   })
 
   changeCellTypeOnSelect.addEventListener('input', () => {
     ruleObj.changeCellTypeOn = +changeCellTypeOnSelect.selectedOptions[0].value
-    updateCellTypesStorage()
+    // updatePROJ.cellTypesStorage()
   })
 
   deleteRuleBtn.addEventListener('click', () => {
-    deleteCellRule(cellTypes[getCurrentCellIndex()], ruleIndex)
+    deleteCellRule(PROJ.cellTypes[getCurrentCellIndex()], ruleIndex)
     item.remove()
   })
 
@@ -310,11 +318,11 @@ function createCellRuleElement(itemRule, ruleIndex) {
 
 function deleteCellRule(cell, ruleIndex) {
   cell.rules.splice(ruleIndex, 1)
-  updateCellTypesStorage()
+  // updatePROJ.cellTypesStorage()
 }
 
 function setCellRules(cellIndex) {
-  const cellType = cellTypes[cellIndex]
+  const cellType = PROJ.cellTypes[cellIndex]
 
   if(cellType.isBasic) {
     nodes.cellDeleteBtn.style.display = 'none'
@@ -334,9 +342,9 @@ function setCellRules(cellIndex) {
 }
 
 function makeBasicCellFunction(cellIndex) {
-  delete cellTypes[getBasicCellIndex()].isBasic
-  if(cellTypes[cellIndex]) cellTypes[cellIndex].isBasic = true
-  updateCellTypesStorage()
+  delete PROJ.cellTypes[getBasicCellIndex()].isBasic
+  if(PROJ.cellTypes[cellIndex]) PROJ.cellTypes[cellIndex].isBasic = true
+  // updatePROJ.cellTypesStorage()
 }
 
 nodes.makeBasicCell.addEventListener('click', () => {
@@ -351,14 +359,14 @@ nodes.cellTypesSelect.addEventListener('input', event => {
 nodes.addRuleBtn.addEventListener('click', () => {
   const selectedCellIndex = getCurrentCellIndex()
 
-  cellTypes[selectedCellIndex].rules.push({
+  PROJ.cellTypes[selectedCellIndex].rules.push({
     cellNeighbors: {
       [selectedCellIndex]: [0, 1, 4]
     },
     probability: 1,
     changeCellTypeOn: selectedCellIndex
   })
-  updateCellTypesStorage()
+  // updatePROJ.cellTypesStorage()
 
   setCellRules(selectedCellIndex)
 })

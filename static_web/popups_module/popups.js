@@ -35,3 +35,7 @@ document.querySelectorAll('.popup').forEach(node => {
 function openPopup(id) {
   document.querySelector('#' + id + '.popup').classList.add('popup--active')
 }
+
+function closePopup(id) {
+  document.querySelector('#' + id + '.popup').classList.remove('popup--active')
+}

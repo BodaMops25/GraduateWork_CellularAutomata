@@ -25,20 +25,51 @@ const isVerticalDevice = window.innerHeight > window.innerWidth ? true : false,
       // biggerSide = isVerticalDevice ? realSizeHeight : realSizeWidth,
       smallerSide = !isVerticalDevice ? window.innerHeight : window.innerWidth
 
-// APP
+// app
 
 function resetProject() {
   const answer = confirm('Ви точно хочете очистити проет?')
   if(answer) {
     isReseting = true
 
-    localStorage.removeItem('app')
-    localStorage.removeItem('cellTypes')
-    localStorage.removeItem('game_fields_history')
+    localStorage.removeItem('app_' + USER.id + '_' + PROJ.title)
+    // localStorage.removeItem('cellTypes')
+    localStorage.removeItem('game_fields_history_' + USER.id + '_' + PROJ.title)
+
+    PROJ.cellTypes = []
+    // game_fields_history = []
 
     location.reload()
   }
 }
+
+window.addEventListener('beforeunload', () => {
+
+  if(isReseting === false) {
+    updateGameFieldsStorage()
+    updateAppStorage()
+  }
+
+  fetch('users', {
+    method: 'PUT',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      auth: {
+        name: USER.id,
+        pass: USER.pass
+      },
+      body: {
+        projects: USER.projects
+      }
+    }),
+    keepalive: true
+  })
+    .then(res => {
+      if(res.status === 401) alert('Ви не авторизовані')
+      else if(res.status === 500) alert('Щось пішло не так, спробуйте пізніше')
+    })
+  // }
+})
 
 // FPS TOOL
 
