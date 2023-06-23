@@ -5,16 +5,11 @@
     "pass": "12345678",
     "projects": [
       {
-        "title": "Proj1",
-        "width": 50,
-        "height": 50
+        "title": "Проект 1",
+        "resolution": 100
       }
     ],
-    "blueprints": [
-      {
-        "title": "bp2"
-      }
-    ],
+    "blueprints": [],
     "creatingDate": 1687488236307
   }
 ]

@@ -203,7 +203,7 @@
     </div>
   </div>
 
-  <p id="fps-indicator">FPS: <span class="fps-num">000</span></p>
+  <!-- <p id="fps-indicator">FPS: <span class="fps-num">000</span></p> -->
 
   <script src="popups_module/popups.js"></script>
   <script>
@@ -230,14 +230,48 @@
     }
   </script>
 
-  <script src="core.js"></script>
-  <script src="index.js"></script>
-  <script src="game.js"></script>
+  <script>
+
+    function insertScript(path) {
+      const script = document.createElement('script')
+      script.src = path
+
+      document.body.appendChild(script)
+    }
+
+    const gameTitle = new URL(location.href).searchParams.get('game')
+
+    let proj = undefined,
+        field_res = 0,
+        field_height = 0
+
+    fetch('users/' + localStorage.user_id)
+      .then(res => res.json())
+      .then(USER => {
+
+        proj = USER.projects.find(proj => proj.title === gameTitle)
+
+        field_res = proj.resolution;
+
+        setTimeout(() => {
+          insertScript('core.js')
+
+          setTimeout(() => {
+            insertScript('game.js')
+
+            setTimeout(() => {
+              insertScript('game_canvas.js')
+            }, 50)
+          }, 50)
+        }, 50)
+      })
+
+  </script>
 
   <script>
     // init
 
-    if(app.isPlayed) makeAnimation()
+    // if(app.isPlayed) makeAnimation()
   </script>
 
 </body>

@@ -82,6 +82,11 @@
       margin-left: 10px;
     }
 
+    .list-container__item-title {
+      color: #000;
+      text-decoration: none;
+    }
+
     #blueprints-list {
       height: 202px;
     }
@@ -128,10 +133,8 @@
           <form id="create-project-settings-form">
             <label for="proj-name">Назва проекту:</label>
             <input type="text" id="proj-name" placeholder="" required>
-            <label for="proj-field-width">Ширина ігрового поля:</label>
-            <input type="number" id="proj-field-width" placeholder="" required>
-            <label for="proj-field-height">Висота ігрового поля:</label>
-            <input type="number" id="proj-field-height" placeholder="" required>
+            <label for="proj-field-res">Якість ігрового поля:</label>
+            <input type="number" id="proj-field-res" placeholder="" required>
             <button type="submit">Створити</button>
           </form>
         </p>
@@ -207,7 +210,7 @@
       node.classList.add('list-container__item')
 
       node.innerHTML = `
-        <p class="list-container__item-title">${title}</p>
+        <a href="game.html?game=${title}" class="list-container__item-title">${title}</a>
         <button class="list-container__delete-item-btn">видалити</button>
       `
       node.querySelector('.list-container__delete-item-btn').addEventListener('click', () => {
@@ -279,10 +282,9 @@
           e.preventDefault()
 
           const proj_title = createProjectForm.querySelector('#proj-name').value,
-                proj_field_width = +createProjectForm.querySelector('#proj-field-width').value,
-                proj_field_height = +createProjectForm.querySelector('#proj-field-height').value
+                proj_field_res = +createProjectForm.querySelector('#proj-field-res').value
 
-          if(!proj_title || proj_field_width <= 0 || proj_field_height <= 0) {
+          if(!proj_title || proj_field_res <= 0) {
             alert('Недопустимі налаштування для проекту, спробуйте інші')
             return
           }
@@ -294,8 +296,7 @@
 
           USER.projects.push({
             title: proj_title,
-            width: proj_field_width,
-            height: proj_field_height
+            resolution: proj_field_res
           })
 
           fetch('users', {
@@ -315,7 +316,7 @@
               if(res.status === 401) alert('Ви не авторизовані')
               else if(res.status === 500) alert('Щось пішло не так, спробуйте пізніше')
               else if(res.status === 200) {
-                location.href = 'game.html'
+                location.href = 'game.html?game=' + proj_title
               }
             })
         })
