@@ -90,6 +90,14 @@
       min-height: 200px;
     }
 
+    #create-project-settings-form > * {
+      display: block;
+    }
+
+    #create-project-settings-form input {
+      margin-bottom: 10px;
+    }
+
     @media (max-width: 500px) {
       body {
         margin: 10px;
@@ -112,7 +120,7 @@
 </head>
 <body>
 
-  <div id="creating-project-settings" class="popup popup--active">
+  <div id="creating-project-settings" class="popup">
     <div class="popup__content-container">
       <div class="popup__content">
         <h3>Налаштування проекту</h3>
@@ -121,9 +129,9 @@
             <label for="proj-name">Назва проекту:</label>
             <input type="text" id="proj-name" placeholder="" required>
             <label for="proj-field-width">Ширина ігрового поля:</label>
-            <input type="text" id="proj-field-width" placeholder="" required>
+            <input type="number" id="proj-field-width" placeholder="" required>
             <label for="proj-field-height">Висота ігрового поля:</label>
-            <input type="text" id="proj-field-height" placeholder="" required>
+            <input type="number" id="proj-field-height" placeholder="" required>
             <button type="submit">Створити</button>
           </form>
         </p>
@@ -267,10 +275,28 @@
         makeListFormUserStuff('blueprints', blueprintsListNode, 'Креслення')
         makeListFormUserStuff('projects', projectsListNode, 'Проект')
 
-        createProjectsBtn.addEventListener('click', () => {
-          // USER.projects.push({
+        createProjectForm.addEventListener('submit', e => {
+          e.preventDefault()
 
-          // })
+          const proj_title = createProjectForm.querySelector('#proj-name').value,
+                proj_field_width = +createProjectForm.querySelector('#proj-field-width').value,
+                proj_field_height = +createProjectForm.querySelector('#proj-field-height').value
+
+          if(!proj_title || proj_field_width <= 0 || proj_field_height <= 0) {
+            alert('Недопустимі налаштування для проекту, спробуйте інші')
+            return
+          }
+
+          if(USER.projects.find(proj => proj.title === proj_title)) {
+            alert('Проект з такою назвою вже існує')
+            return
+          }
+
+          USER.projects.push({
+            title: proj_title,
+            width: proj_field_width,
+            height: proj_field_height
+          })
 
           fetch('users', {
             method: 'PUT',
@@ -281,7 +307,7 @@
                 pass: USER.pass
               },
               body: {
-                projects: array
+                projects: USER.projects
               }
             })
           })
@@ -289,7 +315,7 @@
               if(res.status === 401) alert('Ви не авторизовані')
               else if(res.status === 500) alert('Щось пішло не так, спробуйте пізніше')
               else if(res.status === 200) {
-                alert(alertTitle + ' видалено')
+                location.href = 'game.html'
               }
             })
         })
@@ -301,7 +327,7 @@
     })
 
     createProjectsBtn.addEventListener('click', () => {
-      openPopup('creating-project-setting')
+      openPopup('creating-project-settings')
     })
 
     logoutNode.addEventListener('click', () => {

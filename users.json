@@ -5,11 +5,9 @@
     "pass": "12345678",
     "projects": [
       {
-        "title": "Project name",
-        "fieldSize": {
-          "width": 50,
-          "height": 50
-        }
+        "title": "Proj1",
+        "width": 50,
+        "height": 50
       }
     ],
     "blueprints": [
