@@ -36,7 +36,8 @@ async function createUser(userObj) {
     name: userObj.name,
     pass: userObj.pass.toString(),
     projects: [],
-    blueprints: []
+    blueprints: [],
+    creatingDate: +new Date()
   }
 
   users.push(user)
@@ -123,7 +124,7 @@ usersRouter.route('/users')
           name: name,
           pass: pass
         })
-        res.status(HTTP_CODES.OK).send(user)
+        res.status(HTTP_CODES.OK).json(user)
       }
     })
   })
@@ -175,6 +176,26 @@ usersRouter.route('/users')
 usersRouter.get('/users/:userId', async (req, res) => {
   await errorsWrapper(res, async () => {
     res.json(await getUser(req.params.userId))
+  })
+})
+
+usersRouter.post('/users/auth', async (req, res) => {
+  await errorsWrapper(res, async () => {
+
+    if(!req.body) {
+      res.status(HTTP_CODES.BAD_REQUEST).send('Invalud req.body')
+      return
+    }
+
+    const {name, pass} = req.body
+
+    if(!await checkAuth(name, pass)) {
+      res.sendStatus(HTTP_CODES.UNAUTHORIZED)
+      return
+    }
+    else {
+      res.status(HTTP_CODES.OK).json(await getUser(name))
+    }
   })
 })
 

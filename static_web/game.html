@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cellular automaton (Game of life)</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <button class="screen-button screen-button--info" onclick="openPopup('app-guide')" title="Довідка">i</button>
+  <button class="screen-button screen-button--clear-game" title="Очистити проект" onclick="resetProject()">
+    <img src="resources/images/trash.svg" alt="trash icon">
+  </button>
+
+  <div id="app-guide" class="popup">
+    <div class="popup__content-container">
+      <div class="popup__content">
+        <h3>Як користуватись додатком</h3>
+        <p>
+          Зліва знаходиться вікно <strong>контролю часом</strong> кліткового автомата.<br>
+          <strong>Попередній крок</strong> відмотує стан кліткового автомата на 1 крок назад.
+          <strong>Наступний крок</strong> робить обробку стану кожної клітинки поля 1 раз.
+          <strong>Пауза</strong> зупиняє анімацію кліткового автомата.
+          <strong>Анімація</strong> анімує клітковий автомат.
+          <strong>Стрілки</strong> вказують напрямок анімації: зворотня та вперед.
+          Також можливо прямо вказати <strong>певний крок</strong> для відтворення стану автомата на цьому кроці.
+        </p>
+        <p>
+          З правого боку знаходиться вікно <strong>додавання нових типів клітинок та редагування правил для них</strong>. Найперше поле <strong>"Тип клітинок"</strong> визначає поточний тип клітинок для всьго додатку.
+          Також серед типів клітин є <strong>Базовий тип</strong>. В проекті може бути тільки один базовй тип клітин. Це той тип клітин який використовуєтся щоб заповнювати клітинки на яких немає жодного типу клітин.
+        </p>
+        <p>
+          Зверху знаходиться вікно інстурментів (зліва на право)<br>
+          <strong>Інструмент малювання</strong> - при натисканні лівої кнопки миші на полі автомата, в певному місці будуть з'являтися клітинки поточного типу клітинок вказаного у правому вікні.<br>
+          <strong>Інструмент виподкового заповнення поля</strong> - перетворює частину поля на поточний тип клітинок.<br>
+          <strong>Інструмент очищення поля</strong> - заміняє різні типи клітин на полі на базовий тип.<br>
+          <strong>Інструмент заповнення поля</strong> - заповнення поля поточним типом клітинок.<br>
+          <strong>Інструмент копіювання частини поля</strong> - визначається область поля яку треба копіювати й відправляється в буфер проекту, цю скопійовану область можна буде використати далі в проекті.<br>
+          <strong>Інструмент вставки частини поля</strong> - дає можливість вставити область з буферу проекту на ігрове поле в певному місці.<br>
+        </p>
+      </div>
+      <div class="popup__close-button">X</div>
+    </div>
+  </div>
+
+  <div id="set-rule-neighbors" class="popup">
+    <div class="popup__content-container">
+      <div class="popup__content">
+        <h3>Встановити кількість сусідів</h3>
+        <div><input type="checkbox" id="neighbors0"><label for="neighbors0">0 Сусідів</label></div>
+        <div><input type="checkbox" id="neighbors1"><label for="neighbors1">1 Сусід</label></div>
+        <div><input type="checkbox" id="neighbors2"><label for="neighbors2">2 Сусіда</label></div>
+        <div><input type="checkbox" id="neighbors3"><label for="neighbors3">3 Сусіда</label></div>
+        <div><input type="checkbox" id="neighbors4"><label for="neighbors4">4 Сусіда</label></div>
+        <div><input type="checkbox" id="neighbors5"><label for="neighbors5">5 Сусідів</label></div>
+        <div><input type="checkbox" id="neighbors6"><label for="neighbors6">6 Сусідів</label></div>
+        <div><input type="checkbox" id="neighbors7"><label for="neighbors7">7 Сусідів</label></div>
+        <div><input type="checkbox" id="neighbors8"><label for="neighbors8">8 Сусідів</label></div>
+        <br>
+        <button id="set-rule-neighbors-save-btn">Зберегти</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="tools-window tools-window--top-window tools-window--top-window--closed">
+    <div class="tools-window__item">
+
+      <div id="painting-tool" class="tools-window--top-window__tool-icon" title="Малювання">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M7.127 22.562l-7.127 1.438 1.438-7.128 5.689 5.69zm1.414-1.414l11.228-11.225-5.69-5.692-11.227 11.227 5.689 5.69zm9.768-21.148l-2.816 2.817 5.691 5.691 2.816-2.819-5.691-5.689z"/></svg>
+      </div>
+
+      <div id="random-fill-tool" class="tools-window--top-window__tool-icon" title="Випадкове заповнення поля" onclick="randomFillCells(getCurrentCellIndex(), .5)">
+        <img src="/resources/images/cellular-automata.svg" alt="cellular automata icon">
+      </div>
+
+      <div id="clear-field-tool" class="tools-window--top-window__tool-icon" title="Очищення поля" onclick="clearField()">
+        <img src="/resources/images/clear-icon.png" alt="clear icon">
+      </div>
+
+      <div id="fill-field-tool" class="tools-window--top-window__tool-icon" title="Повне заповнення поля" onclick="fillField(getCurrentCellIndex())">
+        <img src="/resources/images/cells-icon.svg" alt="cells icon">
+      </div>
+
+      <div id="copy-area-tool" class="tools-window--top-window__tool-icon" title="Копіювати частину поля">
+        <img src="/resources/images/copy_cell_grid.svg" alt="copy cells icon">
+      </div>
+
+      <div id="paste-area-tool" class="tools-window--top-window__tool-icon" title="Вставити частину поля">
+        <img src="/resources/images/paste_cell_grid.svg" alt="paste cells icon">
+      </div>
+      
+    </div>
+    
+    <div class="tools-window-button tools-window__button" onclick="toggleWindow(nodes.windowSelectors.top)">
+      <svg class="tools-window-button__symbol" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M21 12l-18 12v-24z"/></svg>
+    </div>
+  </div>
+  
+  <canvas></canvas>
+
+  <div class="tools-window tools-window--right-window tools-window--right-window--closed">
+    <div class="tools-window__item">
+
+      <h3 class="tools-window__title">Типи клітин та правила для них</h3>
+
+      <div class="cell-types-tool">
+        <div class="cell-types-tool__cell-selector">
+          <label class="cell-types-tool__selector-title" for="cell-types-select">Тип клітинок:</label>
+          <select id="cell-types-select" class="cell-types-tool__select">
+            <option value="Чорний">Чорний</option>
+            <option value="Білий" selected>Білий</option>
+          </select>
+          <p id="is-basic-cell-type-text" class="cell-types-tool_cell-is-basic" style="display: none">Є базовит типом клітинок!</p>
+          <button id="delete-cell-type-button" class="delete-button cell-types-tool__delete-type">🗑️</button>
+          <button id="make-basic-cell">зробити базовим</button>
+        </div>
+        <div class="cell-types-tool__cell-adding">
+          <div class="cell-types-tool__cell-adding-container-title">Додати тип клітинок:</div>
+          <form class="cell-types-tool__cell-adding-form">
+            <input class="cell-types-tool__cell-adding-title" type="text" placeholder="Назва типу клітинок">
+            <input class="cell-types-tool__cell-adding-color" type="color">
+            <button class="cell-types-tool__cell-adding-submit-button" type="submit">+</button>
+          </form>
+        </div>
+      </div>
+
+      <hr>
+
+      <div class="cell-rules">
+        <!-- <div class="cell-rule-item">
+          <p class="cell-rule-item__title">Якщо:</p>
+          <div class="cell-rule-item__description">
+            <label for="ruleNeighborsType" class="cell-rule-item__label">Сусідів</label>
+            <select id="ruleNeighborsType" class="cell-rule-item__cells-select">
+              <option value="Чорний">Чорний</option>
+              <option value="Білий">Білий</option>
+            </select>
+            :
+            <input type="text" class="cell-rule-item__neighbors-counts" value="7, 8, 9">
+            <label for="cellRulesNeighborsCount" class="cell-rule-item__label">Ймовірність:</label> 
+            <input id="cellRulesProbability" class="cell-rule-item__probability" type="number" min="0" max="100" step="1" value="100">
+          </div>
+          <p class="cell-rule-item__title">То:</p>
+          <label for="ruleChangingType" class="cell-rule-item__label">Тип змінюється на:</label>
+          <select id="ruleChangingType" class="cell-rule-item__cells-select">
+            <option value="Чорний">Чорний</option>
+            <option value="Білий">Білий</option>
+          </select>
+        </div> -->
+      </div>
+
+      <div class="button-add">
+        <button class="button-add__button">+</button>
+      </div>
+
+    </div>
+
+    <div class="tools-window-button tools-window__button" onclick="toggleWindow(nodes.windowSelectors.right)">
+      <svg class="tools-window-button__symbol" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M21 12l-18 12v-24z"/></svg>
+    </div>
+  </div>
+
+  <div class="tools-window tools-window--left-window tools-window--left-window--closed">
+    <div class="tools-window__item">
+
+      <h3 class="tools-window__title">Контроль часом</h3>
+
+      <div class="buttons-container tools-window__buttons-container">
+        <div class="buttons-container__line">       
+          <button id="back-step-automaton" class="buttons-container__button" onclick="moveTimeBackward()">Попередній крок</button>
+          <button id="next-step-automaton" class="buttons-container__button" onclick="moveTimeForward()">Наступний крок</button>
+        </div>
+        <div class="buttons-container__line">
+          <button id="pause-automaton" class="buttons-container__button" onclick="pauseAnimation()">Пауза</button>
+          <button id="animate-automaton" class="buttons-container__button" onclick="makeAnimation()">Анімація</button>
+          <button id="animation-direction-backward" class="buttons-container__button" onclick="setAnimationDirection(-1)">←</button>
+          <button id="animation-direction-forward" class="buttons-container__button" onclick="setAnimationDirection(1)">→</button>
+        </div>
+        <div class="buttons-container__line buttons-container__set-generation-container">
+          <form id="set-generation-form">
+            <label for="set-generation-input">Вказати крок: </label>
+            <input type="number" id="set-generation-input" placeholder="0" required min="0" value="0">
+            <button type="submit">виконати</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="input-field">
+        <label for="automaton-framerate">Кадрів анімації в секунду: </label>
+        <input id="automaton-framerate" type="number" min="1" max="1000" step="1" value="60">
+      </div>
+
+      <div class="tools-window__text-container">
+        <p class="tools-window__text">Кроків виконано: <span id="automaton-steps">0</span></p>
+        <p class="tools-window__text">Поточний крок: <span id="automaton-current-step">0</span></p>
+      </div>
+
+      <div class="tools-window-button tools-window__button" onclick="toggleWindow(nodes.windowSelectors.left)">
+        <svg class="tools-window-button__symbol" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M21 12l-18 12v-24z"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <p id="fps-indicator">FPS: <span class="fps-num">000</span></p>
+
+  <script>
+    // WINDOWS TOGGLING
+
+    const openedWindows = JSON.parse(localStorage.getItem('openedWindows') || '[]')
+
+    openedWindows.forEach(nodeClass => {
+      document.querySelector('.' + nodeClass).classList.remove(nodeClass + '--closed')
+    })
+
+    function toggleWindow(selector) {
+      const nodeClass = selector.replace('.', ''),
+            node = document.querySelector(selector)
+      node.classList.toggle(nodeClass + '--closed')
+
+      if(node.classList.contains(nodeClass + '--closed') === false) openedWindows.push(nodeClass)
+      else {
+        const removeItemIndex = openedWindows.findIndex(itm => itm === nodeClass)
+        if(removeItemIndex !== -1) openedWindows.splice(removeItemIndex, 1)
+      }
+
+      localStorage.setItem('openedWindows', JSON.stringify(openedWindows))
+    }
+  </script>
+
+  <script src="core.js"></script>
+  <script src="index.js"></script>
+  <script src="game.js"></script>
+
+  <script>
+    // init
+
+    if(app.isPlayed) makeAnimation()
+  </script>
+
+</body>
+</html>

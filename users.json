@@ -1,16 +1,10 @@
 [
   {
-    "id": 3454356,
-    "name": "User1",
-    "pass": "123",
-    "projects": [],
-    "blueprints": []
-  },
-  {
-    "id": 1687304347329,
-    "name": "boda",
+    "id": 1687482647530,
+    "name": "Boda",
     "pass": "12345678",
     "projects": [],
-    "blueprints": []
+    "blueprints": [],
+    "creatingDate": 1687482647531
   }
 ]
