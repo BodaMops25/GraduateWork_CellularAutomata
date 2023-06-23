@@ -63,7 +63,7 @@ async function deleteUser(userIdentificator) {
 
 async function updateUser(userIdentificator, propsObj) {
   const users = await readUsers(),
-        user = users.find(user => user.id === userIdentificator || user.name === userIdentificator)
+        user = users.find(user => user.id === +userIdentificator || user.name === userIdentificator)
 
   if(user === undefined) {
     throw new Error(USERS_CODES.USER_NOT_EXIST)
@@ -78,7 +78,7 @@ async function updateUser(userIdentificator, propsObj) {
   if(propsObj.name) user.name = propsObj.name
   if(propsObj.pass) user.pass = propsObj.pass.toString()
   if(propsObj.projects) user.projects = propsObj.projects
-  if(propsObj.blueprints) user.name = blueprintsropsObj.blueprints
+  if(propsObj.blueprints) user.blueprints = propsObj.blueprints
 
   await writeUsers(users)
   return user

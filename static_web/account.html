@@ -4,10 +4,335 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Аккаунт</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 40px;
+      position: relative;
+    }
+
+    p {
+      margin: 0;
+    }
+
+    .section-2-columns {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 40px;
+    }
+
+    .section-2-columns > .container:first-child {
+      width: 32%;
+    }
+    .section-2-columns > .container:nth-child(2) {
+      width: 64%;
+    }
+
+    .container__title {
+      margin-top: 0;
+    }
+
+    .container__container-inner {
+      border: 2px solid #000;
+    }
+
+    .account-data-container {
+      padding: 30px;
+    }
+
+    .account-data-container__textline {
+      margin: 0;
+      margin-bottom: 15px;
+    }
+
+    .account-data-container__buttons-container {
+      margin-top: 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    #account-pass-input {
+      border: none;
+      background-color: transparent;
+      color: #000;
+      width: 100px;
+    }
+
+    .list-container {
+      overflow: hidden;
+      overflow-y: auto;
+    }
+
+    .list-container__item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      margin: 0;
+      border-bottom: 2px solid #000;
+    }
+
+    .list-container__add-item {
+      margin-top: 10px;
+      margin-left: 10px;
+    }
+
+    #blueprints-list {
+      height: 202px;
+    }
+
+    #projects-list {
+      min-height: 200px;
+    }
+
+    @media (max-width: 500px) {
+      body {
+        margin: 10px;
+      }
+
+      .section-2-columns {
+        display: block;
+      }
+
+      .section-2-columns > .container {
+        width: 100% !important;
+      }
+
+      .section-2-columns > .container:first-child {
+        margin-bottom: 40px
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="popups_module/popups.css">
 </head>
 <body>
-  
-  
 
+  <div id="creating-project-settings" class="popup popup--active">
+    <div class="popup__content-container">
+      <div class="popup__content">
+        <h3>Налаштування проекту</h3>
+        <p>
+          <form id="create-project-settings-form">
+            <label for="proj-name">Назва проекту:</label>
+            <input type="text" id="proj-name" placeholder="" required>
+            <label for="proj-field-width">Ширина ігрового поля:</label>
+            <input type="text" id="proj-field-width" placeholder="" required>
+            <label for="proj-field-height">Висота ігрового поля:</label>
+            <input type="text" id="proj-field-height" placeholder="" required>
+            <button type="submit">Створити</button>
+          </form>
+        </p>
+      </div>  
+      <div class="popup__close-button">X</div>
+    </div>
+  </div>
+  
+  <div class="section-2-columns">
+
+    <div class="container">
+
+      <h3 class="container__title">Дані аккаунта</h3>
+
+      <div class="container__container-inner account-data-container">
+        <p class="account-data-container__textline">Ім'я аккаунта: <span id="account-name">Name</span></p>
+        <p class="account-data-container__textline">Пароль: <input id="account-pass-input" type="password" value="00000000" disabled><button id="show-pass">показати</button></p>
+        <p class="account-data-container__textline">Дата реєстрації: <span id="account-creating-date">01.01.1900</span></p>
+        <div class="account-data-container__buttons-container">
+          <button id="logout">Вийти</button>
+          <button id="delete-account">Видалити аккаунт</button>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="container">
+
+      <h3 class="container__title">Збережені креслення</h3>
+
+      <div id="blueprints-list" class="container__container-inner list-container">
+        <div class="content"></div>
+        <!-- <div class="list-container__item">
+          <p class="list-container__item-title">Креслення 1</p>
+          <button class="list-container__delete-item-btn">видалити</button>
+        </div>
+        <div class="list-container__item">
+          <p class="list-container__item-title">Креслення 2</p>
+          <button class="list-container__delete-item-btn">видалити</button>
+        </div> -->
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="container">
+
+    <h3 class="container__title">Проекти</h3>
+
+    <div id="projects-list" class="container__container-inner list-container">
+      <div class="content"></div>
+      <button id="create-project" class="list-container__add-item">створити проект</button>
+    </div>
+
+  </div>
+  
+  <script src="popups_module/popups.js"></script>
+  <script>
+    const accountNameNode = document.querySelector('#account-name'),
+          accountPassInput = document.querySelector('#account-pass-input'),
+          accountShowPassNode = document.querySelector('#show-pass'),
+          accountCreatingDateNode = document.querySelector('#account-creating-date'),
+          logoutNode = document.querySelector('#logout'),
+          deleteAccountNode = document.querySelector('#delete-account'),
+          blueprintsListNode = document.querySelector('#blueprints-list'),
+          projectsListNode = document.querySelector('#projects-list'),
+          createProjectsBtn = document.querySelector('#create-project'),
+          createProjectForm = document.querySelector('#create-project-settings-form')
+
+    function listItemHTML(title, deletingCallback) {
+      const node = document.createElement('div')
+      node.classList.add('list-container__item')
+
+      node.innerHTML = `
+        <p class="list-container__item-title">${title}</p>
+        <button class="list-container__delete-item-btn">видалити</button>
+      `
+      node.querySelector('.list-container__delete-item-btn').addEventListener('click', () => {
+        deletingCallback()
+        node.remove()
+      })
+
+      return node
+    }
+
+    if(!localStorage.user_id || !localStorage.user_pass) {
+      alert('Ви не увійшли в аккаунт')
+      location.href = '/'
+    }
+    
+    fetch('users/' + localStorage.user_id)
+      .then(res => res.json())
+      .then(USER => {
+        
+        accountNameNode.innerText = USER.name
+        accountPassInput.value = USER.pass
+
+        const dt = new Date(USER.creatingDate)
+        let d = dt.getDate(),
+            m = dt.getMonth() + 1,
+            fy = dt.getFullYear()
+
+        d = d < 10 ? '0' + d : d
+        m = m < 10 ? '0' + m : m
+        fy = fy < 10 ? '0' + fy : fy
+
+        accountCreatingDateNode.innerText = [d, m, fy].join('.')
+
+        function makeListFormUserStuff(prop_key, listNode, alertTitle) {
+          USER[prop_key].forEach((item, i, array) => {
+            listNode.querySelector('.content').appendChild(listItemHTML(item.title, () => {
+
+              const deletingItemIndex = array.findIndex(sub_item => sub_item === item)
+              array.splice(deletingItemIndex, 1)
+              
+              fetch('users', {
+                method: 'PUT',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                  auth: {
+                    name: USER.id,
+                    pass: USER.pass
+                  },
+                  body: {
+                    [prop_key]: array
+                  }
+                })
+              })
+                .then(res => {
+                  if(res.status === 401) alert('Ви не авторизовані')
+                  else if(res.status === 500) alert('Щось пішло не так, спробуйте пізніше')
+                  else if(res.status === 200) {
+                    alert(alertTitle + ' видалено')
+                  }
+                })
+            }))
+          })
+        }
+
+        makeListFormUserStuff('blueprints', blueprintsListNode, 'Креслення')
+        makeListFormUserStuff('projects', projectsListNode, 'Проект')
+
+        createProjectsBtn.addEventListener('click', () => {
+          // USER.projects.push({
+
+          // })
+
+          fetch('users', {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+              auth: {
+                name: USER.id,
+                pass: USER.pass
+              },
+              body: {
+                projects: array
+              }
+            })
+          })
+            .then(res => {
+              if(res.status === 401) alert('Ви не авторизовані')
+              else if(res.status === 500) alert('Щось пішло не так, спробуйте пізніше')
+              else if(res.status === 200) {
+                alert(alertTitle + ' видалено')
+              }
+            })
+        })
+      })
+
+    accountShowPassNode.addEventListener('click', () => {
+      if(accountPassInput.type === 'password') accountPassInput.type = 'text'
+      else accountPassInput.type = 'password'
+    })
+
+    createProjectsBtn.addEventListener('click', () => {
+      openPopup('creating-project-setting')
+    })
+
+    logoutNode.addEventListener('click', () => {
+      delete localStorage.user_id
+      delete localStorage.user_pass
+      location.href = '/'
+    })
+
+    deleteAccountNode.addEventListener('click', () => {
+      if(
+        confirm('Ви впевнені що хочете видалити аккаунт у безворотньому напрямку?') &&
+        prompt('Введіть "видалити аккаунт" щоб видалити аккаунт') === 'видалити аккаунт'
+      ) {
+        fetch('users', {
+          method: 'DELETE',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            name: localStorage.user_id,
+            pass: localStorage.user_pass
+          })
+        })
+          .then(res => {
+            if(res.status === 401) alert('Ви не авторизовані')
+            else if(res.status === 500) alert('Щось пішло не так, спробуйте пізніше')
+            else if(res.status === 200) {
+              alert('Аккаунт видалено')
+              location.href = '/'
+            }
+          })
+      }
+    })
+  </script>
 </body>
 </html>
