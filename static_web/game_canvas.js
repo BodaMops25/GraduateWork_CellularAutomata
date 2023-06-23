@@ -137,7 +137,10 @@ function calculateCell(x, y) {
     PROJ.cellTypes[cell.from].rules.forEach(({cellNeighbors, probability, changeCellTypeOn}) => {
       for(const key in cellNeighbors) {
         if(!neighborsCounts[key]) neighborsCounts[key] = 0
-        if(cellNeighbors[key].find(itm => itm === neighborsCounts[key]) !== undefined) setCell(x, y, undefined, changeCellTypeOn)
+        if(cellNeighbors[key].find(itm => itm === neighborsCounts[key]) !== undefined) {
+
+          if(Math.random() * 101 <= probability) setCell(x, y, undefined, changeCellTypeOn)
+        }
       }
     })
   }
